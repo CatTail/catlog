@@ -36,15 +36,28 @@ function traverse (dir, handler) {
   }
 }
 
+function parse_post (post, env) {
+  var match = post.match(/^\s*\/\*\s*([^\0]*?)\*\//);
+  if (match) {
+    post = post.slice(match[0].length).trim();
+    match[1].trim().split(/\s*\n\s*/).forEach(function (option) {
+      option = option.split(/\s*:\s*/);
+      env[option[0]] = option[1];
+    });
+  }
+  return post;
+}
+
 traverse(settings.source, function (dir) {
-  var post, newDir;
+  var post, newDir, env;
   if (dir !== settings.source) {
     if (fs.statSync(dir).isDirectory()) {
       newDir = dir.replace(settings.source, settings.destination);
       !fs.existsSync(newDir) && fs.mkdirSync(newDir);
     } else {
       post = fs.readFileSync(dir, 'utf8');
-      console.log(dir);
+      env = {};
+      post = parse_post(post, env);
       fs.writeFileSync(dir.replace(settings.source, settings.destination).replace(/md$/, 'html'), marked(post), 'utf8');
     }
   }
