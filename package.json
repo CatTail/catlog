@@ -1,0 +1,22 @@
+{
+  "name": "catlog",
+  "version": "0.0.0",
+  "description": "CatTail's auto markdown blog generator",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/CatTail/catlog.git"
+  },
+  "keywords": [
+    "blog",
+    "markdown",
+    "cattail"
+  ],
+  "dependencies": {
+    "marked": "*"
+  },
+  "author": "zhongchiyu@gmail.com",
+  "license": "BSD"
+}
