@@ -15,7 +15,8 @@
     "cattail"
   ],
   "dependencies": {
-    "marked": "*"
+    "marked": "*",
+    "ejs": "*"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "BSD"
