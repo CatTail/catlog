@@ -3,5 +3,8 @@
   "destination": "_post",
   "permalink": "date",
   "base_url": "/",
-  "theme": "leap-day"
+  "port": "8081",
+  "author": "CatTail",
+  "site_name": "猫尾",
+  "theme": "came"
 }
