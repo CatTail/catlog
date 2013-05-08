@@ -1,6 +1,8 @@
 var fs = require('fs');
 var marked = require('marked');
 var settings = require('./settings');
+var ejs = require('ejs');
+var ncp = require('ncp').ncp;
 
 marked.setOptions({
   gfm: true,
@@ -36,6 +38,7 @@ function traverse (dir, handler) {
   }
 }
 
+// parse post header variables
 function parse_post (post, env) {
   var match = post.match(/^\s*\/\*\s*([^\0]*?)\*\//);
   if (match) {
@@ -48,17 +51,30 @@ function parse_post (post, env) {
   return post;
 }
 
-traverse(settings.source, function (dir) {
-  var post, newDir, env;
-  if (dir !== settings.source) {
-    if (fs.statSync(dir).isDirectory()) {
-      newDir = dir.replace(settings.source, settings.destination);
-      !fs.existsSync(newDir) && fs.mkdirSync(newDir);
-    } else {
-      post = fs.readFileSync(dir, 'utf8');
-      env = {};
-      post = parse_post(post, env);
-      fs.writeFileSync(dir.replace(settings.source, settings.destination).replace(/md$/, 'html'), marked(post), 'utf8');
-    }
+var theme_dir = './themes/' + settings.theme;
+var theme = fs.readFileSync(theme_dir + '/index.html', 'utf8');
+ncp(theme_dir, settings.destination, function (err) {
+  if (err) {
+    console.log(err);
   }
+  traverse(settings.source, function (dir) {
+    var post, newDir, env;
+    if (dir !== settings.source) {
+      if (fs.statSync(dir).isDirectory()) {
+        newDir = dir.replace(settings.source, settings.destination);
+        !fs.existsSync(newDir) && fs.mkdirSync(newDir);
+      } else {
+        env = {};
+        post = fs.readFileSync(dir, 'utf8');
+        post = marked(parse_post(post, env));
+        post = ejs.render(theme, {section: post});
+        fs.writeFileSync(dir.replace(settings.source, settings.destination).replace(/md$/, 'html'), post, 'utf8');
+      }
+    }
+  });
 });
+
+var permalinks = {
+  date: '/:categories/:year/:month/:day/:title.html',
+  none: '/:categories/:title.html'
+}:
