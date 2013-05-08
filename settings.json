@@ -1,5 +1,5 @@
 {
-  "source": "post",
+  "source": "./post",
   "destination": "_post",
   "permalink": "date",
   "theme": "leap-day"
