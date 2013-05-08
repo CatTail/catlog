@@ -2,5 +2,6 @@
   "source": "./post",
   "destination": "_post",
   "permalink": "date",
+  "base_url": "/",
   "theme": "leap-day"
 }
