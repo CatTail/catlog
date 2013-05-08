@@ -85,6 +85,23 @@ function parse_permalink (filename, env) {
   });
 }
 
+function render_post (filename) {
+  var env = {}, permalink, post;
+  // permalink
+  permalink = parse_permalink(filename, env);
+  // post
+  post = fs.readFileSync(filename, 'utf8');
+  post = marked(parse_post(post, env));
+  post = ejs.render(theme, {section: post, base_url: settings.base_url});
+  mkdir_parent(path.dirname(settings.destination+permalink));
+  fs.writeFileSync(settings.destination+permalink, post, 'utf8');
+}
+
+function updater (filename) {
+  console.log(filename);
+  render_post(filename);
+}
+
 var theme_dir = './themes/' + settings.theme;
 var theme = fs.readFileSync(theme_dir + '/template.html', 'utf8');
 ncp(theme_dir, settings.destination, function (err) {
@@ -95,16 +112,12 @@ ncp(theme_dir, settings.destination, function (err) {
         newDir = dir.replace(settings.source, settings.destination);
         !fs.existsSync(newDir) && fs.mkdirSync(newDir);
       } else {
-        file = dir;
-        env = {};
-        // permalink
-        permalink = parse_permalink(file, env);
-        // post
-        post = fs.readFileSync(file, 'utf8');
-        post = marked(parse_post(post, env));
-        post = ejs.render(theme, {section: post, base_url: settings.base_url});
-        mkdir_parent(path.dirname(settings.destination+permalink));
-        fs.writeFileSync(settings.destination+permalink, post, 'utf8');
+        if (path.extname(dir) === '.md') {
+          render_post(dir);
+          fs.watchFile(dir, {persistent: true, interval: 1000}, function () {
+            updater(dir);
+          });
+        }
       }
     }
   });
