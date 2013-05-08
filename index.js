@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var marked = require('marked');
 var settings = require('./settings');
 var ejs = require('ejs');
@@ -21,6 +22,22 @@ marked.setOptions({
   }
  */
 });
+
+var permalink_styles = {
+  date: '/:category/:year/:month/:day/:title.html',
+  none: '/:category/:title.html'
+};
+
+function mkdir_parent (dir, mode) {
+  try {
+    fs.mkdirSync(dir, mode);
+  } catch (error) {
+    if (error && error.errno === 34) {
+      mkdir_parent(path.dirname(dir), mode);
+      mkdir_parent(dir, mode);
+    }
+  }
+}
 
 /**
  * Traverse directory(could be a file), 
@@ -51,30 +68,44 @@ function parse_post (post, env) {
   return post;
 }
 
+function parse_permalink (filename, env) {
+  var permalink_style;
+  env.category = (path.dirname(filename) === settings.source) ? 
+    '' : path.relative(settings.source, path.dirname(filename));
+  filename = path.basename(filename, path.extname(filename)).split('-');
+  env.year = filename[0];
+  env.month = filename[1];
+  env.day = filename[2];
+  env.title = filename.slice(3).join('-');
+  permalink_style = settings.permalink ? 
+    (permalink_styles[settings.permalink] || settings.permalink) : 
+    permalink_styles.date;
+  return permalink_style.replace(/:(\w+)/g, function (match, item) {
+    return env[item];
+  });
+}
+
 var theme_dir = './themes/' + settings.theme;
-var theme = fs.readFileSync(theme_dir + '/index.html', 'utf8');
+var theme = fs.readFileSync(theme_dir + '/template.html', 'utf8');
 ncp(theme_dir, settings.destination, function (err) {
-  if (err) {
-    console.log(err);
-  }
   traverse(settings.source, function (dir) {
-    var post, newDir, env;
+    var post, newDir, env, file, permalink;
     if (dir !== settings.source) {
       if (fs.statSync(dir).isDirectory()) {
         newDir = dir.replace(settings.source, settings.destination);
         !fs.existsSync(newDir) && fs.mkdirSync(newDir);
       } else {
+        file = dir;
         env = {};
-        post = fs.readFileSync(dir, 'utf8');
+        // permalink
+        permalink = parse_permalink(file, env);
+        // post
+        post = fs.readFileSync(file, 'utf8');
         post = marked(parse_post(post, env));
         post = ejs.render(theme, {section: post});
-        fs.writeFileSync(dir.replace(settings.source, settings.destination).replace(/md$/, 'html'), post, 'utf8');
+        mkdir_parent(path.dirname(settings.destination+permalink));
+        fs.writeFileSync(settings.destination+permalink, post, 'utf8');
       }
     }
   });
 });
-
-var permalinks = {
-  date: '/:categories/:year/:month/:day/:title.html',
-  none: '/:categories/:title.html'
-}:
