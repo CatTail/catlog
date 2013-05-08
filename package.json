@@ -16,7 +16,8 @@
   ],
   "dependencies": {
     "marked": "*",
-    "ejs": "*"
+    "ejs": "*",
+    "ncp": "*"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "BSD"
