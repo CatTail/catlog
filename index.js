@@ -4,6 +4,10 @@ var marked = require('marked');
 var settings = require('./settings');
 var ejs = require('ejs');
 var ncp = require('ncp').ncp;
+var static = require('node-static');
+var _ = require('underscore');
+var pygments = require('pygments');
+var async = require('async');
 
 marked.setOptions({
   gfm: true,
@@ -11,13 +15,10 @@ marked.setOptions({
   breaks: false,
   pedantic: false,
   sanitize: true,
-  smartLists: true
+  smartLists: true,
+  langPrefix: 'highlight lang-',
   /*
-  langPrefix: 'language-',
   highlight: function(code, lang) {
-    if (lang === 'js') {
-      return highlighter.javascript(code);
-    }
     return code;
   }
  */
@@ -58,11 +59,11 @@ function traverse (dir, handler) {
 // parse post header variables
 function parse_post (post, env) {
   var match = post.match(/^\s*\/\*\s*([^\0]*?)\*\//);
-  if (match) {
+    if (match) {
     post = post.slice(match[0].length).trim();
     match[1].trim().split(/\s*\n\s*/).forEach(function (option) {
-      option = option.split(/\s*:\s*/);
-      env[option[0]] = option[1];
+option = option.split(/\s*:\s*/);
+env[option[0]] = option[1];
     });
   }
   return post;
@@ -85,40 +86,70 @@ function parse_permalink (filename, env) {
   });
 }
 
-function render_post (filename) {
-  var env = {}, permalink, post;
+function render_post (filename, template) {
+  var env = {}, post, options, tokens;
   // permalink
-  permalink = parse_permalink(filename, env);
+  env.permalink = parse_permalink(filename, env);
   // post
   post = fs.readFileSync(filename, 'utf8');
-  post = marked(parse_post(post, env));
-  post = ejs.render(theme, {section: post, base_url: settings.base_url});
-  mkdir_parent(path.dirname(settings.destination+permalink));
-  fs.writeFileSync(settings.destination+permalink, post, 'utf8');
+  // hack for pygment syntax async highlight
+  tokens = marked.lexer(parse_post(post, env));
+  async.forEach(tokens, function (token, callback) {
+    if (token.type === 'code') {
+      pygments.colorize(token.text, token.lang, 'html', function (data) {
+        token.escaped = true;
+        token.text = data;
+        callback();
+      }, {'P': 'nowrap=true'});
+    } else {
+      callback();
+    }
+  }, function () {
+    post = marked.parser(tokens);
+    (options = _.clone(settings)).section = post;
+    post = ejs.render(template, options);
+    mkdir_parent(path.dirname(settings.destination+env.permalink));
+    fs.writeFileSync(settings.destination+env.permalink, post, 'utf8');
+  });
+  return env;
 }
 
-function updater (filename) {
-  console.log(filename);
-  render_post(filename);
+function updater (filename, template) {
+  render_post(filename, template);
 }
 
-var theme_dir = './themes/' + settings.theme;
-var theme = fs.readFileSync(theme_dir + '/template.html', 'utf8');
-ncp(theme_dir, settings.destination, function (err) {
-  traverse(settings.source, function (dir) {
-    var post, newDir, env, file, permalink;
-    if (dir !== settings.source) {
-      if (fs.statSync(dir).isDirectory()) {
-        newDir = dir.replace(settings.source, settings.destination);
-        !fs.existsSync(newDir) && fs.mkdirSync(newDir);
-      } else {
-        if (path.extname(dir) === '.md') {
-          render_post(dir);
-          fs.watchFile(dir, {persistent: true, interval: 1000}, function () {
-            updater(dir);
-          });
+(function(){
+  var theme_dir = './themes/' + settings.theme;
+  var template = fs.readFileSync(theme_dir + '/template.html', 'utf8');
+  var list_template = fs.readFileSync(theme_dir + '/list.html', 'utf8');
+  var envs = [];
+  ncp(theme_dir, settings.destination, function (err) {
+    var options;
+    traverse(settings.source, function (dir) {
+      var newDir;
+      if (dir !== settings.source) {
+        if (fs.statSync(dir).isDirectory()) {
+          newDir = dir.replace(settings.source, settings.destination);
+          !fs.existsSync(newDir) && fs.mkdirSync(newDir);
+        } else {
+          if (path.extname(dir) === '.md') {
+            envs.push(render_post(dir, template));
+            fs.watchFile(dir, {persistent: true, interval: 1000}, function () {
+              updater(dir, template);
+            });
+          }
         }
       }
-    }
+    });
+    (options = _.clone(settings)).section = ejs.render(list_template, {articles: envs});
+    fs.writeFileSync(settings.destination+'/index.html', ejs.render(template, options), 'utf8');
   });
-});
+
+  var fileServer = new static.Server(settings.destination);
+  require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+      fileServer.serve(request, response);
+    });
+  }).listen(settings.port);
+  console.log('Server destination with http://localhost:'+settings.port);
+}());

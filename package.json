@@ -17,7 +17,11 @@
   "dependencies": {
     "marked": "*",
     "ejs": "*",
-    "ncp": "*"
+    "ncp": "*",
+    "node-static": "*",
+    "underscore": "*",
+    "pygments": "*",
+    "async": "*"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "BSD"
