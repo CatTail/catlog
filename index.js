@@ -102,7 +102,7 @@ ncp(theme_dir, settings.destination, function (err) {
         // post
         post = fs.readFileSync(file, 'utf8');
         post = marked(parse_post(post, env));
-        post = ejs.render(theme, {section: post});
+        post = ejs.render(theme, {section: post, base_url: settings.base_url});
         mkdir_parent(path.dirname(settings.destination+permalink));
         fs.writeFileSync(settings.destination+permalink, post, 'utf8');
       }
