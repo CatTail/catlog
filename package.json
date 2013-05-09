@@ -21,7 +21,9 @@
     "node-static": "*",
     "underscore": "*",
     "pygments": "*",
-    "async": "*"
+    "async": "*",
+    "commander": "*",
+    "moment": "*"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "BSD"

@@ -1,6 +1,7 @@
 /*
  Title: github-pages-title
- Date: 2012-02-10 22:17:09
+ Date: 2012-02-10 
+ Time: 22:17:09
  Tags: tag
  Author: CatTail
 */
