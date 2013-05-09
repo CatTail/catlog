@@ -1,6 +1,7 @@
 /*
  Title: using-closure-tools-build-webpage
- Date: 2012-02-10 22:17:09
+ Date: 2012-02-10
+ Time: 22:17:09
  Tags: tag
  Category: category
  Author: CatTail
