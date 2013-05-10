@@ -1,7 +1,7 @@
 {
   "source": "./post",
   "destination": "_post",
-  "permalink": "date",
+  "permalink_style": "date",
   "base_url": "/",
   "port": "8081",
   "author": "CatTail",
