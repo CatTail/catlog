@@ -1,16 +1,14 @@
 #! /usr/bin/env node
 
-var commander = require('commander');
-var settings = require('../settings');
-var ejs = require('ejs');
-var fs = require('fs');
-var moment = require('moment');
-var path = require('path');
-
-var categories = fs.readdirSync(settings.source);
-console.log(categories);
+var commander = require('commander')
+  , settings = require('../settings')
+  , ejs = require('ejs')
+  , fs = require('fs')
+  , moment = require('moment')
+  , path = require('path');
 
 commander.prompt('title: ', function (title) {
+  var categories = fs.readdirSync(settings.source);
   commander.choose('category:', categories, function (index, category) {
     commander.prompt('author(blank to use default settings): ', function (author) {
       author = author || settings.author;
