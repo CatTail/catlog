@@ -1,0 +1,15 @@
+<% include header %>
+<div class="wrapper">
+  <nav>
+    <ul></ul>
+  </nav>
+
+  <section>
+    <ul>
+      <% articles.forEach(function (article) { %>
+      <li><a href="<%= base_url + article.permalink %>"><%= article.title %></a></li>
+      <% }) %>
+    </ul>
+  </section>
+</div>
+<% include footer %>

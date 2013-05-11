@@ -12,10 +12,14 @@ var fs = require('fs')
 var gen_post = function gen_post (env) {
   parser.parse_post(env);
   render.render_post(env, function () {
-    !fs.existsSync(path.dirname(env.destination)) &&
-      directory.mkdir_parent(path.dirname(env.destination));
-    fs.writeFileSync(env.destination, env.post, 'utf8');
+    !fs.existsSync(path.dirname(env.dest)) &&
+      directory.mkdir_parent(path.dirname(env.dest));
+    fs.writeFileSync(env.dest, env.post, 'utf8');
   });
+};
+
+var gen_list = function gen_list (env) {
+  
 };
 
 var updater = function updater (env) {
@@ -28,25 +32,22 @@ var main = function main () {
     , settings = _.defaults({}/* global_settings */, default_settings)
     , envs = [];
 
-  directory.traverse(settings.source, function (fullpath) {
+  directory.traverse(settings.source, function (src) {
     var env = _.clone(settings);
-    if (fs.statSync(file).isFile()) {
-      if (path.extname(file) === '.md') {
-        envs.push(env);
-        env.source = fullpath;
-        gen_post(env);
-        fs.watchFile(file, {persistent: true, interval: 1000}, function () {
-          updater(env);
-        });
-      }
+    if (fs.statSync(src).isFile() && path.extname(src) === '.md') {
+      envs.push(env);
+      env.src = src;
+      gen_post(env);
+      fs.watchFile(src, {persistent: true, interval: 1000}, function () {
+        updater(env);
+      });
     }
   });
   // render index
-  /*
-  var options;
-  (options = _.clone(settings)).section = ejs.render(list_template, {articles: envs});
-  fs.writeFileSync(settings.destination+'/index.html', ejs.render(template, options), 'utf8');
- */
+  var env = _.clone(settings);
+  env.articles = envs;
+  render.render_list(env);
+  fs.writeFileSync(env.destination+'/index.html', env.post, 'utf8');
   // copy themes assets
   // FIXME
   exec(util.format('cp -r ./themes/%s %s;mv %s/%s %s/theme', 
