@@ -9,32 +9,35 @@ var fs = require('fs')
 //  , ncp = require('ncp')
   , _ = require('underscore');
 
-function updater (filename, template) {
-  render_post(filename, template);
-}
+var gen_post = function gen_post (env) {
+  parser.parse_post(env);
+  render.render_post(env, function () {
+    !fs.existsSync(path.dirname(env.destination)) &&
+      directory.mkdir_parent(path.dirname(env.destination));
+    fs.writeFileSync(env.destination, env.post, 'utf8');
+  });
+};
+
+var updater = function updater (env) {
+  console.log('update');
+  gen_post(env);
+};
 
 var main = function main () {
   var default_settings = require('./settings')
     , settings = _.defaults({}/* global_settings */, default_settings)
     , envs = [];
 
-  directory.traverse(settings.source, function (dir) {
-    var newDir, env = _.clone(settings);
-    if (dir !== settings.source) {
-      if (fs.statSync(dir).isDirectory()) {
-        newDir = dir.replace(settings.source, settings.destination);
-        !fs.existsSync(newDir) && fs.mkdirSync(newDir);
-      } else {
-        if (path.extname(dir) === '.md') {
-          env.fullpath = dir;
-          parser.parse_post(env);
-          render.render_post(env, function () {
-            envs.push(env);
-          });
-          fs.watchFile(dir, {persistent: true, interval: 1000}, function () {
-//            updater(dir, template);
-          });
-        }
+  directory.traverse(settings.source, function (fullpath) {
+    var env = _.clone(settings);
+    if (fs.statSync(file).isFile()) {
+      if (path.extname(file) === '.md') {
+        envs.push(env);
+        env.source = fullpath;
+        gen_post(env);
+        fs.watchFile(file, {persistent: true, interval: 1000}, function () {
+          updater(env);
+        });
       }
     }
   });

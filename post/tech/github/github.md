@@ -1,31 +1,15 @@
 /*
- Title: github-pages-title
- Date: 2012-02-10 
- Time: 22:17:09
- Tags: tag
+ Title: github
+ Category: tech
  Author: CatTail
+ Date: 2013-05-11
+ Time: 22:55:05
 */
-
-## 钟哥是个天才
-
 ### Welcome to GitHub Pages.
+钟驰宇sdf
 This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:
 
-## what
-
-```js
-var test = 'asdf';
 ```
-
-`test`
-
-钟驰宇
-
-* asdf
-* kj
-* asdf
-
-```sh
 $ cd your_repo_root/repo_name
 $ git fetch origin
 $ git checkout gh-pages
