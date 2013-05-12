@@ -18,11 +18,11 @@
         <li class="fn-left">
           <a class="nav-home" href="/">Home</a>
         </li>
-        <% categories.forEach(function(category){ %>
+        <% for (var category in categories) { %>
           <li class="fn-left">
             <a href="/<%= category %>"><%= category %></a>
           </li>
-        <% }) %>
+        <% } %>
         <li class="fn-left">
           <a href="/feed.xml">Feed</a>
         </li>
