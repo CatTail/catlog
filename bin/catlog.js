@@ -15,7 +15,8 @@ var fs = require('fs')
 program
   .version('0.0.1')
 //  .option('-c --config [path]', 'self defined configuration file')
-  .option('-s --server [port]', 'start local server on port');
+  .option('-s --server [port]', 'start local server on port')
+  .option('-a --auto', 'watch for file change and auto update');
 
 program
   .command('init')
@@ -79,9 +80,8 @@ function cmd_generate () {
     server.run({root: settings.destination, 
                port: program.server || settings.port});
   }
-  console.log(settings);
   
-  generator.generate(settings);
+  generator.generate(settings, program.auto);
   // copy themes assets
   // FIXME
   exec(util.format('rm -r ./%s/themes/*', settings.destination), function () {
