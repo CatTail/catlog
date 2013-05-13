@@ -26,5 +26,12 @@
     "moment": "*"
   },
   "author": "zhongchiyu@gmail.com",
-  "license": "BSD"
+  "license": "MIT",
+  "bin": {
+    "catlog": "./bin/catlog.js"
+  },
+	"directories" : {
+		"lib" : "./lib",
+		"bin" : "./bin"
+	}
 }
