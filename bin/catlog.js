@@ -86,8 +86,8 @@ function cmd_generate () {
   // copy themes assets
   // FIXME
   exec(util.format('rm -r ./%s/themes/*', settings.destination), function () {
-    exec(util.format('cp -rf ./themes/%s %s;mv %s/%s %s/theme', 
-                     settings.theme, settings.destination, settings.destination, 
-                     settings.theme, settings.destination));
+    exec(util.format('cp -rf %s/themes/%s %s;mv %s/%s %s/theme', 
+                     root, settings.theme, settings.destination,
+                     settings.destination, settings.theme, settings.destination));
   });
 }
