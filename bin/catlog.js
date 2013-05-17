@@ -52,7 +52,8 @@ function cmd_post (title) {
     , settings = _.defaults(local_settings, global_settings);
 
   var categories = fs.readdirSync(settings.source);
-  program.choose('category:', categories, function (index, category) {
+  console.log('category:');
+  program.choose(categories, function (index, category) {
     program.prompt('author(blank to use default settings): ', function (author) {
       author = author || settings.author;
       var date = moment().format('YYYY-MM-DD');
