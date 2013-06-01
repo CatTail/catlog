@@ -30,34 +30,28 @@ generator.generate = (settings, auto) ->
     # FIXME how to locate category directory?
     @generate_list categories_env, category
 
-generator.generate_post = (env, callback) ->
-  parser.parse_post env
-  render.render_post env, ->
-    not fs.existsSync(path.dirname env.dest) and
-      directory.mkdir_parent path.dirname(env.dest)
-    fs.writeFileSync env.dest, env.post, 'utf8'
-    callback and callback()
-
 generator.generate_posts = (envs, auto, callback) ->
   # render post
   async.each envs, ((env, callback) =>
-    render.render_post env, =>
-      not fs.existsSync path.dirname env.dest and
-        directory.mkdir_parent path.dirname env.dest
-        fs.writeFileSync env.dest, env.post, 'utf8'
-        callback()
-        auto and fs.watchFile env.src, {persistent: true, interval: 1000}, =>
-          @updater env
+    @generate_post env, =>
+      auto and fs.watchFile env.src, {persistent: true, interval: 1000}, =>
+        console.log 'update'
+        parser.parse_post env
+        @generate_post env
   ), (->
     console.log 'complete'
     callback and callback())
 
+generator.generate_post = (env, callback) ->
+  render.render_post env, ->
+    if not fs.existsSync path.dirname env.dest
+      directory.mkdir_parent path.dirname env.dest
+    fs.writeFileSync env.dest, env.post, 'utf8'
+    callback and callback()
+
 generator.generate_list = (env, to) ->
   render.render_list env
-  fs.writeFileSync path.join(env.destination, to, 'index.html'), env.post, 'utf8'
-
-generator.updater = (env) ->
-  console.log 'update'
-  @generate_post env
+  fs.writeFileSync path.join(env.destination, to, 'index.html'),
+    env.post, 'utf8'
 
 module.exports = generator
