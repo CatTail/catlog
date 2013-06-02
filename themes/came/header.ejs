@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
   <title><%= site_name %> by <%= author %></title>
   <link rel="stylesheet" href="<%= base_url %>theme/stylesheets/gfm_markdown.css">
+  <link rel="stylesheet" href="<%= base_url %>theme/stylesheets/style.css">
   <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
@@ -12,24 +13,22 @@
 </head>
 <body>
   <header id="header">
-    <h1 class="brand"><a href="/"><%= site_name %></a></h1>
-    <nav id="nav">
-      <ul class="fn-clear">
-        <li class="fn-left">
-          <a class="nav-home" href="/">Home</a>
-        </li>
-        <% categories.forEach(function (category) { %>
-          <li class="fn-left">
-            <a href="/<%= category %>"><%= category %></a>
-          </li>
-          <% }) %>
-        <li class="fn-left">
-          <a href="/feed.xml">Feed</a>
-        </li>
-      </ul>
-    </nav>
+    <div class="aux">
+      <h1><a href="/"><%= site_name %></a></h1>
+    </div>
   </header>
-
-  <div id="banner">
-    <span id="logo"></span>
-  </div><!-- end banner -->
+  <nav id="nav">
+    <ul>
+      <li>
+        <a href="/">Home</a>
+      </li>
+      <% categories.forEach(function (category) { %>
+        <li>
+        <a href="/<%= category %>"><%= category %></a>
+        </li>
+      <% }) %>
+      <li>
+        <a href="/feed.xml">Feed</a>
+      </li>
+    </ul>
+  </nav>

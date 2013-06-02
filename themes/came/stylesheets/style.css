@@ -1,0 +1,72 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html {
+  background: #FFF;
+  color: #444;
+  padding: 0 15px;
+  font-family: arial,sans-serif;
+}
+.aux {
+  margin: auto;
+  max-width: 978px;
+}
+header {
+  background: #F5F5F5;
+  background-image: -moz-linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -webkit-linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#FAFAFA),color-stop(1,#F5F5F5));
+  background-image: linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -moz-linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -webkit-linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#FAFAFA),color-stop(1,#F5F5F5));
+  background-image: linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -moz-linear-gradient(#FAFAFA,#F5F5F5);
+  background-image: -webkit-linear-gradient(#FAFAFA,#F5F5F5);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#FAFAFA),color-stop(1,#F5F5F5));
+  background-image: linear-gradient(#FAFAFA,#F5F5F5);
+  background-image: -moz-linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -webkit-linear-gradient(top,#FAFAFA,#F5F5F5);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#FAFAFA),color-stop(1,#F5F5F5));
+  background-image: linear-gradient(top,#FAFAFA,#F5F5F5);
+  border-bottom: 1px solid #EEE;
+  color: #444;
+  min-height: 44px;
+  padding: 14px 15px 6px;
+  margin: 0 -15px;
+}
+header h1 {
+  margin: 0;
+  font: 23px/40px 'Open Sans',arial,sans-serif;
+}
+nav {
+  background: #FCFCFC;
+  border-bottom: 1px solid #F2F2F2;
+  margin: 0 -12px 30px;
+  min-height: 32px;
+  overflow: hidden;
+  padding: 0 12px;
+  font-size: 14px;
+}
+nav ul {
+  list-style: none;
+  margin: auto;
+  max-width: 978px;
+}
+nav li {
+  float: left;
+  height: 32px;
+  line-height: 2.4;
+  margin: 0;
+  padding: 0;
+}
+nav li a {
+  background: url("data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAA0AAAAyCAMAAACwGaE2AAAAGXR…iUGo4zathVhv4JryGidFxUZEK1YvU%2F%2FoJMAALAzLRLGBHPgAAAABJRU5ErkJggg%3D%3D") no-repeat center right;
+  display: block;
+  height: 32px;
+  margin: 0 7px 0 0;
+  padding: 0 15px 0 0;
+  position: relative;
+  overflow: hidden;
+}
