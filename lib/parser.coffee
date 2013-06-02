@@ -1,40 +1,41 @@
 fs = require 'fs'
 path = require 'path'
 _ = require 'underscore'
-cwd = process.cwd()
+directory = require './directory'
 parser = {}
+cwd = process.cwd()
 
-parser.parse_post = (env) ->
-  env.post = fs.readFileSync env.src, 'utf8'
-  env.title = path.basename path.dirname env.src
-  env.category = path.basename path.dirname path.dirname env.src
-  _.defaults env, require path.join(cwd, path.dirname(env.src), 'meta.json')
-  [env.year, env.monty, env.day] = env.date.split '-'
-  @parse_permalink env
-  env.dest = path.join env.destination, env.permalink
+parser.parse = (env) ->
+  env.categories = []
+  env.posts = []
+  directory.traverse env.source, (src) =>
+    if fs.statSync(src).isFile() and path.extname(src) is '.md'
+      env.posts.push(post = @parse_post src, env)
+      if env.categories.indexOf post.category is -1
+        env.categories.push post.category
+  return env
 
 parser.permalink_styles = {
   date: ':category/:year/:month/:day/:title.html'
   none: ':category/:title.html'
 }
 
-parser.parse_permalink = (env) ->
+parser.parse_post = (src, env) ->
+  post = {}
+  post.src = src
+  post.content = fs.readFileSync src, 'utf8'
+  post.title = path.basename path.dirname src
+  post.category = path.basename path.dirname path.dirname src
+  meta = require path.join(cwd, path.dirname(src), 'meta.json')
+  post = _.defaults meta, post
+  [post.year, post.month, post.day] = post.date.split '-'
   # date is the default permalink style
   env.permalink_style = @permalink_styles[env.permalink_style] or
     env.permalink_style or @permalink_styles.date
-
-  env.permalink = env.permalink_style.replace(/:(\w+)/g, (match, item) ->
-    return env[item.toLowerCase()]
+  post.permalink = env.permalink_style.replace(/:(\w+)/g, (match, item) ->
+    return post[item.toLowerCase()]
   )
-
-parser.parse_categories = (envs) ->
-  categories = {}
-  for env in envs
-    if categories[env.category]
-      categories[env.category].push(env)
-    else
-      categories[env.category] = [env]
-    env.categories = categories
-  return categories
+  post.dest = path.join env.destination, post.permalink
+  return post
 
 module.exports = parser

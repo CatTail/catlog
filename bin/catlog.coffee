@@ -10,7 +10,8 @@ ejs = require 'ejs'
 moment = require 'moment'
 async = require 'async'
 server = require '../lib/server'
-generator = require '../lib/generator'
+parser = require '../lib/parser'
+render = require '../lib/render'
 root = path.resolve __dirname, '..'
 current = process.cwd()
 
@@ -24,7 +25,7 @@ import_settings = ->
 
 cmd_init = ->
   copyFileSync path.join(root, 'assets/settings.json'), './settings.json'
-  exec "cp -r #{root}/themes themes"
+  exec "cp -r #{root}/themes ."
 
 cmd_post = (title) ->
   settings = import_settings()
@@ -77,11 +78,11 @@ cmd_generate = ->
     server.run {
       path: settings.destination, port: program.server or settings.port}
   # parse, render markdowns
-  generator.generate settings, program.auto
+  _.defaults settings, program.auto
+  render.render parser.parse settings
 
 cmd_migrate = ->
   # using filename as post title
-
 
 program
   .version('0.0.1')
