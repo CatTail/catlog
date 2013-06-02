@@ -26,7 +26,7 @@ render.render = (env, callback) ->
       console.log 'update'
       @render_post post, env
   ), =>
-    @render_list env.posts, env, '/'
+    @render_index env
     for category in env.categories
       posts = (post for post in env.posts when post.category is category)
       @render_list posts, env, category
@@ -53,11 +53,16 @@ render.render_post = (post, env, callback) ->
     fs.writeFileSync post.dest, html, 'utf8'
     callback && callback()
 
+render.render_index = (env) ->
+  filename = path.join "themes/#{env.theme}/index.ejs"
+  html = ejs.render fs.readFileSync(filename, 'utf8'),
+      _.defaults {posts: env.posts, filename: filename}, env
+  fs.writeFileSync path.join(env.destination, 'index.html'), html, 'utf8'
+
 render.render_list = (posts, env, dest) ->
   filename = path.join "themes/#{env.theme}/list.ejs"
   html = ejs.render fs.readFileSync(filename, 'utf8'),
       _.defaults {posts: posts, filename: filename}, env
   fs.writeFileSync path.join(env.destination, dest, 'index.html'), html, 'utf8'
-  return env
 
 module.exports = render
