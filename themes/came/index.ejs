@@ -1,37 +1,11 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="chrome=1">
-  <title><%= site_name %> by <%= author %></title>
-  <link rel="stylesheet" href="<%= base_url %>theme/stylesheets/gfm_markdown.css">
-  <link rel="stylesheet" href="<%= base_url %>theme/stylesheets/style.css">
-  <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-</head>
-<body>
-  <header>
-    <h1><%= site_name %></h1>
-  </header>
-
-  <div id="banner">
-    <span id="logo"></span>
-  </div><!-- end banner -->
-
-  <div class="wrapper">
-    <nav>
-      <ul></ul>
-    </nav>
-
-    <section>
-      <%- post %>
-    </section>
-  </div>
-
-  <footer>
-  </footer>
-  <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-</body>
-</html>
+<% include header %>
+<div class="aux">
+  <section>
+    <ul>
+      <% posts.forEach(function (post) { %>
+      <li><a href="<%= base_url + post.permalink %>"><%= post.title %></a></li>
+      <% }) %>
+    </ul>
+  </section>
+</div>
+<% include footer %>

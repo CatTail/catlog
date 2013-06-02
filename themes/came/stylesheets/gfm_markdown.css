@@ -9,11 +9,8 @@ html {
 body {
 	font: 14px helvetica,arial,freesans,clean,sans-serif;
 	line-height: 1.6;
-	margin: 0 auto;
-  padding: 20px;
 	text-align:left;
 	color: #333;
-	width:920px;
 }
 
 .md {
