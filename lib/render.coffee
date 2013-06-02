@@ -1,28 +1,39 @@
 fs = require 'fs'
 path = require 'path'
-util = require 'util'
+_ = require 'underscore'
 marked = require 'marked'
 async = require 'async'
 pygments = require 'pygments'
 ejs = require 'ejs'
-root = path.join __dirname, '..'
+directory = require './directory'
+parser = require './parser'
 render = {}
 
-marked.setOptions({
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  langPrefix: 'highlight lang-',
-#  highlight: (code, lang) ->
-#    return code
-})
-
-render.render_post = (env, callback) ->
+render.render = (env, callback) ->
+  marked.setOptions {
+    gfm: true
+    tables: true
+    breaks: false
+    pedantic: false
+    sanitize: true
+    smartLists: true
+    langPrefix: 'highlight lang-'
+  }
   # hack for pygment syntax async highlight
-  tokens = marked.lexer env.post
+  async.forEach env.posts, ((post, callback) =>
+    @render_post post, env, callback
+    env.auto and fs.watchFile post.src, {persistent: true, interval: 1000}, =>
+      console.log 'update'
+      @render_post post, env
+  ), =>
+    @render_list env.posts, env, '/'
+    for category in env.categories
+      posts = (post for post in env.posts when post.category is category)
+      @render_list posts, env, category
+    callback && callback()
+
+render.render_post = (post, env, callback) ->
+  tokens = marked.lexer post.content
   async.forEach tokens, ((token, callback) ->
     if token.type is 'code'
       pygments.colorize token.text, token.lang, 'html', ((data) ->
@@ -33,16 +44,20 @@ render.render_post = (env, callback) ->
     else
       callback()
   ), ->
-    # ejs option
-    env.filename = path.join root, "themes/#{env.theme}/post.ejs"
-    template = fs.readFileSync env.filename, 'utf8'
-    env.post = marked.parser tokens
-    env.post = ejs.render template, env
-    callback && callback env
+    post.content = marked.parser tokens
+    filename = "themes/#{env.theme}/post.ejs"
+    html = ejs.render fs.readFileSync(filename, 'utf8'),
+      _.defaults {content: post.content, filename: filename}, env
+    if not fs.existsSync path.dirname post.dest
+      directory.mkdir_parent path.dirname post.dest
+    fs.writeFileSync post.dest, html, 'utf8'
+    callback && callback()
 
-render.render_list = (env) ->
-  env.filename = path.join root, "themes/#{env.theme}/list.ejs"
-  env.post = ejs.render fs.readFileSync(env.filename, 'utf8'), env
+render.render_list = (posts, env, dest) ->
+  filename = path.join "themes/#{env.theme}/list.ejs"
+  html = ejs.render fs.readFileSync(filename, 'utf8'),
+      _.defaults {posts: posts, filename: filename}, env
+  fs.writeFileSync path.join(env.destination, dest, 'index.html'), html, 'utf8'
   return env
 
 module.exports = render
