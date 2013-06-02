@@ -11,7 +11,7 @@ parser.parse = (env) ->
   directory.traverse env.source, (src) =>
     if fs.statSync(src).isFile() and path.extname(src) is '.md'
       env.posts.push(post = @parse_post src, env)
-      if env.categories.indexOf post.category is -1
+      if env.categories.indexOf(post.category) is -1
         env.categories.push post.category
   return env
 
