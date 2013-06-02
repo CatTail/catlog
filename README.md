@@ -1,5 +1,6 @@
 ## TODO
 * 完善came样式
+* 增加about等特殊页面的支持
 * 增加图片支持
 * 增加自定义插件支持(disqus, qudian etc)
 * 分离post title和name
