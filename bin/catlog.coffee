@@ -10,6 +10,7 @@ ejs = require 'ejs'
 moment = require 'moment'
 async = require 'async'
 server = require '../lib/server'
+directory = require '../lib/directory'
 parser = require '../lib/parser'
 render = require '../lib/render'
 root = path.resolve __dirname, '..'
@@ -23,14 +24,17 @@ import_settings = ->
   local_settings = require path.join(current, 'settings.json')
   _.defaults local_settings, global_settings
 
-cmd_init = ->
-  copyFileSync path.join(root, 'assets/settings.json'), './settings.json'
-  exec "cp -r #{root}/themes ."
-
-cmd_post = (title) ->
+create_post = (src) ->
+  if (src)
+    console.log "Original markdown file #{src}"
+    content = fs.readFileSync src, 'utf8'
   settings = import_settings()
   async.series([
     ((callback) ->
+      # title
+      program.prompt 'title: ', (title) ->
+        callback null, title
+    ), ((callback) ->
       # category
       categories = fs.readdirSync settings.source
       categories.push('Add new category')
@@ -49,8 +53,9 @@ cmd_post = (title) ->
     )
   ], (err, results) ->
     # meta data
-    category = results[0]
-    author = results[1]
+    title = results[0]
+    category = results[1]
+    author = results[2]
     date = moment().format 'YYYY-MM-DD'
     time = moment().format 'HH:mm:ss'
     meta = """
@@ -64,9 +69,16 @@ cmd_post = (title) ->
     basename = path.join settings.source, category, title
     fs.mkdirSync basename
     fs.writeFileSync path.join(basename, 'meta.json'), meta, 'utf8'
-    fs.writeFileSync path.join(basename, 'index.md'), '', 'utf8'
+    fs.writeFileSync path.join(basename, 'index.md'), content or '', 'utf8'
     process.stdin.destroy()
   )
+
+cmd_init = ->
+  copyFileSync path.join(root, 'assets/settings.json'), './settings.json'
+  exec "cp -r #{root}/themes ."
+
+cmd_post = ->
+  create_post()
 
 cmd_generate = ->
   settings = import_settings()
@@ -81,8 +93,10 @@ cmd_generate = ->
   _.defaults settings, program.auto
   render.render parser.parse settings
 
-cmd_migrate = ->
-  # using filename as post title
+cmd_migrate = (p) ->
+  directory.traverse p, (src) ->
+    if fs.statSync(src).isFile() and path.extname(src) is '.md'
+      create_post src
 
 program
   .version('0.0.1')
@@ -101,7 +115,7 @@ directory construct')
   .action(cmd_migrate)
 
 program
-  .command('post <title>')
+  .command('post')
   .description('generate post')
   .action(cmd_post)
 
