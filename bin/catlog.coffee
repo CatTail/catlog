@@ -20,7 +20,7 @@ copyFileSync = (from, to) ->
   fs.writeFileSync to, fs.readFileSync(from, 'utf8'), 'utf8'
 
 import_settings = ->
-  global_settings = require '../settings'
+  global_settings = require '../assets/settings'
   local_settings = require path.join(current, 'settings.json')
   _.defaults local_settings, global_settings
 
