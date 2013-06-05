@@ -1,10 +1,12 @@
 {
-  "source": "post",
+  "source": "./post",
   "destination": "_post",
   "permalink_style": "date",
   "base_url": "/",
   "port": "8081",
-  "author": "",
-  "site_name": "",
+  "author": "author",
+  "site_title": "site_name",
+  "site_url": "http://example.com",
+  "description": "description",
   "theme": "came"
 }
