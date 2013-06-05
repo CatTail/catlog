@@ -7,6 +7,7 @@ pygments = require 'pygments'
 ejs = require 'ejs'
 directory = require './directory'
 parser = require './parser'
+RSS = require 'rss'
 render = {}
 
 render.render = (env, callback) ->
@@ -30,6 +31,7 @@ render.render = (env, callback) ->
     for category in env.categories
       posts = (post for post in env.posts when post.category is category)
       @render_list posts, env, category
+    @render_feed env
     callback && callback()
 
 render.render_post = (post, env, callback) ->
@@ -64,5 +66,23 @@ render.render_list = (posts, env, dest) ->
   html = ejs.render fs.readFileSync(filename, 'utf8'),
       _.defaults {posts: posts, filename: filename}, env
   fs.writeFileSync path.join(env.destination, dest, 'index.html'), html, 'utf8'
+
+render.render_feed = (env) ->
+  feed = new RSS {
+    title: env.title
+    description: env.description
+    feed_url: "#{env.site_url}/feed.xml"
+    site_url: "#{env.site_url}"
+    author: env.author
+  }
+  for post in env.posts
+    feed.item {
+      title: post.name
+      description: post.content
+      url: "#{env.site_url}#{env.base_url}#{post.permalink}"
+      author: post.author
+      date: post.date
+    }
+  fs.writeFileSync path.join(env.destination, 'feed.xml'), feed.xml(), 'utf8'
 
 module.exports = render
