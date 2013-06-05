@@ -31,9 +31,13 @@ create_post = (src) ->
   settings = import_settings()
   async.series([
     ((callback) ->
-      # title
-      program.prompt 'title: ', (title) ->
+      # permalink title
+      program.prompt 'permalink title: ', (title) ->
         callback null, title
+    ), ((callback) ->
+      # name
+      program.prompt 'showing name: ', (name) ->
+        callback null, name
     ), ((callback) ->
       # category
       categories = fs.readdirSync settings.source
@@ -54,13 +58,14 @@ create_post = (src) ->
   ], (err, results) ->
     # meta data
     title = results[0]
-    category = results[1]
-    author = results[2]
+    name = results[1]
+    category = results[2]
+    author = results[3]
     date = moment().format 'YYYY-MM-DD'
     time = moment().format 'HH:mm:ss'
     meta = """
       {
-        "title": "#{title}",
+        "name": "#{name}",
         "date": "#{date}",
         "time": "#{time}",
         "author": "#{author}"

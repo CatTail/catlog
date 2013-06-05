@@ -1,6 +1,6 @@
 {
   "name": "catlogjs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "CatTail's auto markdown blog generator",
   "main": "index.coffee",
   "scripts": {
@@ -24,6 +24,7 @@
     "pygments": "*",
     "async": "*",
     "commander": "*",
+    "rss": "*",
     "moment": "*"
   },
   "author": "zhongchiyu@gmail.com",
