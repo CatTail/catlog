@@ -5,7 +5,7 @@
   "base_url": "/",
   "port": "8081",
   "author": "author",
-  "site_title": "site_name",
+  "site_title": "site_title",
   "site_url": "http://example.com",
   "description": "description",
   "theme": "came"
