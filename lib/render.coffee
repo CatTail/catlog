@@ -68,7 +68,6 @@ render.render_list = (posts, env, dest) ->
   fs.writeFileSync path.join(env.destination, dest, 'index.html'), html, 'utf8'
 
 render.render_feed = (env) ->
-  console.log env
   feed = new RSS {
     title: env.site_title
     description: env.description
