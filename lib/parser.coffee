@@ -2,12 +2,14 @@ fs = require 'fs'
 path = require 'path'
 _ = require 'underscore'
 directory = require './directory'
+ejs = require 'ejs'
 parser = {}
 cwd = process.cwd()
 
 parser.parse = (env) ->
   env.categories = []
   env.posts = []
+  env.plugins = @parse_plugin env.plugins
   directory.traverse env.source, (src) =>
     if fs.statSync(src).isFile() and path.extname(src) is '.md'
       env.posts.push(post = @parse_post src, env)
@@ -37,5 +39,10 @@ parser.parse_post = (src, env) ->
   )
   post.dest = path.join env.destination, post.permalink
   return post
+
+parser.parse_plugin = (plugins) ->
+  for plugin, config of plugins
+    raw = fs.readFileSync "plugins/#{plugin}.ejs", 'utf8'
+    ejs.render raw, config
 
 module.exports = parser

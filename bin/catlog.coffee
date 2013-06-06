@@ -81,6 +81,7 @@ create_post = (src) ->
 cmd_init = ->
   copyFileSync path.join(root, 'assets/settings.json'), './settings.json'
   exec "cp -r #{root}/themes ."
+  exec "cp -r #{root}/assets/plugins ."
 
 cmd_post = ->
   create_post()

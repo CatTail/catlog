@@ -1,6 +1,12 @@
   <footer>
   </footer>
+
+<div class="aux">
   <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+  <% plugins.forEach(function (plugin) { %>
+    <%- plugin %>
+  <% }) %>
+</div>
 </body>
 </html>
 
