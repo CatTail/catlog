@@ -6,7 +6,6 @@ util = require 'util'
 exec = require('child_process').exec
 _ = require 'underscore'
 program = require 'commander'
-ejs = require 'ejs'
 moment = require 'moment'
 async = require 'async'
 server = require '../lib/server'
@@ -24,7 +23,7 @@ import_settings = ->
   local_settings = require path.join(current, 'settings.json')
   _.defaults local_settings, global_settings
 
-create_post = (src) ->
+create_post = (src, callback) ->
   if (src)
     console.log "Original markdown file #{src}"
     content = fs.readFileSync src, 'utf8'
@@ -34,10 +33,6 @@ create_post = (src) ->
       # permalink title
       program.prompt 'permalink title: ', (title) ->
         callback null, title
-    ), ((callback) ->
-      # name
-      program.prompt 'showing name: ', (name) ->
-        callback null, name
     ), ((callback) ->
       # category
       categories = fs.readdirSync settings.source
@@ -58,17 +53,15 @@ create_post = (src) ->
   ], (err, results) ->
     # meta data
     title = results[0]
-    name = results[1]
-    category = results[2]
-    author = results[3]
+    category = results[1]
+    author = results[2]
     date = moment().format 'YYYY-MM-DD'
     time = moment().format 'HH:mm:ss'
     meta = """
       {
-        "name": "#{name}",
+        "author": "#{author}",
         "date": "#{date}",
-        "time": "#{time}",
-        "author": "#{author}"
+        "time": "#{time}"
       } 
       """
     basename = path.join settings.source, category, title
@@ -76,12 +69,11 @@ create_post = (src) ->
     fs.writeFileSync path.join(basename, 'meta.json'), meta, 'utf8'
     fs.writeFileSync path.join(basename, 'index.md'), content or '', 'utf8'
     process.stdin.destroy()
+    callback && callback()
   )
 
 cmd_init = ->
-  copyFileSync path.join(root, 'assets/settings.json'), './settings.json'
-  exec "cp -r #{root}/themes ."
-  exec "cp -r #{root}/assets/plugins ."
+  exec "cp -r #{root}/assets/* ."
 
 cmd_post = ->
   create_post()
@@ -97,12 +89,14 @@ cmd_generate = ->
       path: settings.destination, port: program.server or settings.port}
   # parse, render markdowns
   _.defaults settings, program.auto
-  render.render parser.parse settings
+  parser.parse settings, (env) ->
+    render.render env
 
 cmd_migrate = (p) ->
-  directory.traverse p, (src) ->
-    if fs.statSync(src).isFile() and path.extname(src) is '.md'
-      create_post src
+  srcs = directory.list p, (src) ->
+    fs.statSync(src).isFile() and path.extname(src) is '.md'
+  async.eachSeries srcs, (src, callback) ->
+    create_post src, callback
 
 program
   .version('0.0.1')

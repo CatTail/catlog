@@ -17,7 +17,7 @@
   "dependencies": {
     "coffe-script": "*",
     "marked": "*",
-    "ejs": "*",
+    "mustache": "*",
     "ncp": "*",
     "node-static": "*",
     "underscore": "*",

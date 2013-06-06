@@ -3,9 +3,9 @@
 
 <div class="aux">
   <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-  <% plugins.forEach(function (plugin) { %>
-    <%- plugin %>
-  <% }) %>
+  {{#plugins}}
+    {{&.}}
+  {{/plugins}}
 </div>
 </body>
 </html>
