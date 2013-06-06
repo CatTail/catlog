@@ -14,6 +14,13 @@ directory.traverse = (dir, handler) ->
   handler dir
   if fs.statSync(dir).isDirectory()
     for subdir in fs.readdirSync(dir)
-      directory.traverse "#{dir}/#{subdir}", handler
+      directory.traverse path.join(dir, subdir), handler
+
+directory.list = (dir, filter) ->
+  srcs = []
+  @traverse dir, (src) ->
+    if not filter or filter src
+      srcs.push src
+  return srcs
 
 module.exports = directory

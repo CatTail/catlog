@@ -1,0 +1,11 @@
+{{>header}}
+<div class="aux">
+  <section>
+    <ul>
+    {{#posts}}
+    <li><a href="{{base_url}}{{permalink}}">{{heading}}</a></li>
+    {{/posts}}
+    </ul>
+  </section>
+</div>
+{{>footer}}
