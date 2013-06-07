@@ -19,8 +19,8 @@ marked.setOptions {
 }
 
 parser.permalink_styles = {
-  date: ':category/:year/:month/:day/:title.html'
-  none: ':category/:title.html'
+  date: ':category/:year/:month/:day/:title/index.html'
+  none: ':category/:title/index.html'
 }
 
 parser.parse = (site, callback) ->

@@ -6,6 +6,7 @@ jade = require 'jade'
 directory = require './directory'
 parser = require './parser'
 rss = require 'rss'
+exec = require('child_process').exec
 render = {}
 
 render.render = (site, callback) ->
@@ -15,6 +16,11 @@ render.render = (site, callback) ->
   async.forEach site.posts, ((post, callback) =>
     dest = path.join(site.destination, post.permalink)
     @render_file fn_post, {post: post, site: site}, dest, callback
+    # copy post assets
+    src_dir = path.join path.dirname(post.src), 'assets'
+    dest_dir = path.dirname dest
+    exec "cp -r #{src_dir} #{dest_dir}"
+    # auto change detect
     site.auto and fs.watchFile post.src, {persistent: true, interval: 1000}, =>
       console.log 'update'
       @render_file fn_post, {site: site, post: post}, dest, callback
