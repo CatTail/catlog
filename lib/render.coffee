@@ -9,42 +9,30 @@ RSS = require 'rss'
 render = {}
 
 render.render = (site, callback) ->
-  @site = site
-  @fn_post = @compile_template 'post'
-  @fn_index = @compile_template 'index'
-  @fn_list = @compile_template 'list'
+  fn_post = @compile_template 'post', site.theme
+  fn_index = @compile_template 'index', site.theme
+  fn_list = @compile_template 'list', site.theme
   async.forEach site.posts, ((post, callback) =>
-    @render_post post, site, callback
+    dest = path.join(site.destination, post.permalink)
+    @render_file fn_post, {post: post, site: site}, dest, callback
     site.auto and fs.watchFile post.src, {persistent: true, interval: 1000}, =>
       console.log 'update'
-      @render_post post, site
+      @render_file fn_post, {site: site, post: post}, dest, callback
   ), =>
-    @render_index site
+    dest = path.join site.destination, 'index.html'
+    @render_file fn_index, {site: site, posts: site.posts}, dest
     for category in site.categories
       posts = (post for post in site.posts when post.category is category)
-      @render_list posts, site, category
+      dest = path.join category, 'index.html'
+      @render_file fn_list, {site: site, posts: posts}, dest
     @render_feed site
     callback and callback()
 
-render.render_post = (post, site, callback) ->
-  context = {post: post, site: site}
-  html = @fn_post context
-  dest = path.join(site.destination, post.permalink)
+render.render_file = (fn, context, dest, callback) ->
+  html = fn context
   if not fs.existsSync path.dirname dest
     directory.mkdir_parent path.dirname dest
   fs.writeFileSync dest, html, 'utf8'
-  callback and callback()
-
-render.render_index = (site, callback) ->
-  context = {site: site, posts: site.posts}
-  html = @fn_index context
-  fs.writeFileSync path.join(site.destination, 'index.html'), html, 'utf8'
-  callback and callback()
-
-render.render_list = (posts, site, dest, callback) ->
-  context = {site: site, posts: posts}
-  html = @fn_list context
-  fs.writeFileSync path.join(site.destination, dest, 'index.html'), html, 'utf8'
   callback and callback()
 
 render.render_feed = (site, callback) ->
@@ -66,8 +54,8 @@ render.render_feed = (site, callback) ->
   fs.writeFileSync path.join(site.destination, 'feed.xml'), feed.xml(), 'utf8'
   callback and callback()
 
-render.compile_template = (filename) ->
-  filename = "themes/#{@site.theme}/#{filename}.jade"
+render.compile_template = (filename, theme) ->
+  filename = "themes/#{theme}/#{filename}.jade"
   template = fs.readFileSync filename, 'utf8'
   jade.compile template, {filename: filename}
 

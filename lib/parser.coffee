@@ -35,6 +35,8 @@ parser.parse = (site, callback) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
   async.each srcs, ((src, callback) =>
     post = @parse_post src, site.permalink_style, (post) ->
+      # markdown content interpolation
+      post.content = ejs.render post.content, {post: post, site: site}
       site.posts.push post
       if site.categories.indexOf(post.category) is -1
         site.categories.push post.category
@@ -79,6 +81,7 @@ parser.parse_markdown = (content, callback) ->
 parser.parse_plugin = (plugins) ->
   for plugin, config of plugins
     raw = fs.readFileSync "plugins/#{plugin}.html", 'utf8'
-    ejs.render raw, config
+    plugins[plugin] = ejs.render raw, config
+  return plugins
 
 module.exports = parser
