@@ -17,3 +17,34 @@
 * RSS
 * 分离post title和name
 * 增加自定义插件支持(disqus, qudian etc)
+
+## 环境
+### site
+* source
+* destination
+* permalink_style
+* base_url
+* port
+* author
+* site_title
+* site_url
+* destination
+* theme
+* plugins
+* categories
+* posts
+
+### post
+* src
+* title
+* category
+* date
+* time
+* author
+* year
+* month
+* day
+* permalink
+* heading
+* content
+could have self-defined variables

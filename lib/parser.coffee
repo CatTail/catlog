@@ -4,7 +4,7 @@ _ = require 'underscore'
 async = require 'async'
 marked = require 'marked'
 pygments = require 'pygments'
-mustache = require 'mustache'
+ejs = require 'ejs'
 directory = require './directory'
 parser = {}
 cwd = process.cwd()
@@ -24,23 +24,23 @@ parser.permalink_styles = {
   none: ':category/:title.html'
 }
 
-parser.parse = (env, callback) ->
-  env.categories = []
-  env.posts = []
-  env.plugins = @parse_plugin env.plugins
+parser.parse = (site, callback) ->
+  site.categories = []
+  site.posts = []
+  site.plugins = @parse_plugin site.plugins
   # date is the default permalink style
-  env.permalink_style = @permalink_styles[env.permalink_style] or
-    env.permalink_style or @permalink_styles.date
-  srcs = directory.list env.source, (src) ->
+  site.permalink_style = @permalink_styles[site.permalink_style] or
+    site.permalink_style or @permalink_styles.date
+  srcs = directory.list site.source, (src) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
   async.each srcs, ((src, callback) =>
-    post = @parse_post src, env.permalink_style, (post) ->
-      env.posts.push post
-      if env.categories.indexOf(post.category) is -1
-        env.categories.push post.category
+    post = @parse_post src, site.permalink_style, (post) ->
+      site.posts.push post
+      if site.categories.indexOf(post.category) is -1
+        site.categories.push post.category
       callback()
   ), ->
-    callback env
+    callback(site)
 
 parser.parse_post = (src, permalink_style, callback) ->
   post = {}
@@ -79,6 +79,6 @@ parser.parse_markdown = (content, callback) ->
 parser.parse_plugin = (plugins) ->
   for plugin, config of plugins
     raw = fs.readFileSync "plugins/#{plugin}.html", 'utf8'
-    mustache.render raw, config
+    ejs.render raw, config
 
 module.exports = parser
