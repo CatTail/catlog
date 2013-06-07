@@ -7,7 +7,6 @@ pygments = require 'pygments'
 ejs = require 'ejs'
 directory = require './directory'
 parser = {}
-cwd = process.cwd()
 
 marked.setOptions {
   gfm: true
@@ -27,7 +26,7 @@ parser.permalink_styles = {
 parser.parse = (site, callback) ->
   site.categories = []
   site.posts = []
-  site.plugins = @parse_plugin site.plugins
+  site.plugins = @parse_plugin site.plugin_path, site.plugins
   # date is the default permalink style
   site.permalink_style = @permalink_styles[site.permalink_style] or
     site.permalink_style or @permalink_styles.date
@@ -49,7 +48,7 @@ parser.parse_post = (src, permalink_style, callback) ->
   post.src = src
   post.title = path.basename path.dirname src
   post.category = path.basename path.dirname path.dirname src
-  _.defaults post, require path.join(cwd, path.dirname(src), 'meta.json')
+  _.defaults post, require path.join(path.dirname(src), 'meta.json')
   [post.year, post.month, post.day] = post.date.split '-'
   post.permalink = permalink_style.replace(/:(\w+)/g, (match, item) ->
     return post[item.toLowerCase()]
@@ -78,9 +77,9 @@ parser.parse_markdown = (content, callback) ->
     content = marked.parser tokens
     callback and callback(heading, content)
 
-parser.parse_plugin = (plugins) ->
+parser.parse_plugin = (plugin_path, plugins) ->
   for plugin, config of plugins
-    raw = fs.readFileSync "plugins/#{plugin}.html", 'utf8'
+    raw = fs.readFileSync path.join(plugin_path, "#{plugin}.html"), 'utf8'
     plugins[plugin] = ejs.render raw, config
   return plugins
 

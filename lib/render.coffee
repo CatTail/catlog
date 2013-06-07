@@ -5,13 +5,13 @@ async = require 'async'
 jade = require 'jade'
 directory = require './directory'
 parser = require './parser'
-RSS = require 'rss'
+rss = require 'rss'
 render = {}
 
 render.render = (site, callback) ->
-  fn_post = @compile_template 'post', site.theme
-  fn_index = @compile_template 'index', site.theme
-  fn_list = @compile_template 'list', site.theme
+  fn_post = @compile_template 'post', site.theme_path
+  fn_index = @compile_template 'index', site.theme_path
+  fn_list = @compile_template 'list', site.theme_path
   async.forEach site.posts, ((post, callback) =>
     dest = path.join(site.destination, post.permalink)
     @render_file fn_post, {post: post, site: site}, dest, callback
@@ -23,7 +23,7 @@ render.render = (site, callback) ->
     @render_file fn_index, {site: site, posts: site.posts}, dest
     for category in site.categories
       posts = (post for post in site.posts when post.category is category)
-      dest = path.join category, 'index.html'
+      dest = path.join site.destination, category, 'index.html'
       @render_file fn_list, {site: site, posts: posts}, dest
     @render_feed site
     callback and callback()
@@ -36,7 +36,7 @@ render.render_file = (fn, context, dest, callback) ->
   callback and callback()
 
 render.render_feed = (site, callback) ->
-  feed = new RSS {
+  feed = new rss {
     title: site.site_title
     description: site.description
     feed_url: "#{site.site_url}/feed.xml"
@@ -54,8 +54,8 @@ render.render_feed = (site, callback) ->
   fs.writeFileSync path.join(site.destination, 'feed.xml'), feed.xml(), 'utf8'
   callback and callback()
 
-render.compile_template = (filename, theme) ->
-  filename = "themes/#{theme}/#{filename}.jade"
+render.compile_template = (filename, theme_path) ->
+  filename = path.join theme_path, "#{filename}.jade"
   template = fs.readFileSync filename, 'utf8'
   jade.compile template, {filename: filename}
 
