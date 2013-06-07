@@ -1,9 +1,8 @@
 ## TODO
+* 增加图片支持
+* 增加about等特殊页面的支持
 * 完善came样式(增加样式, 时间等)
 * 使用event system来解决大量回调问题
-* 增加图片支持
-* 允许在项目目录(即存在settings.json的任意子目录)运行catlog命令
-* 增加about等特殊页面的支持
 * 完善文档和测试
 
 ## Done
@@ -19,11 +18,14 @@
 * 确定特定类型页面的渲染变量
 * 针对不同页面, 使用不同的插件
 * 增加markdown文件中变量的渲染功能
+* 允许在项目目录(即存在settings.json的任意子目录)运行catlog命令
 
 ## 环境
 ### site
 * source
 * destination
+* theme_path
+* plugin_path
 * permalink_style
 * base_url
 * port

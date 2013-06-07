@@ -2,7 +2,6 @@
 
 fs = require 'fs'
 path = require 'path'
-util = require 'util'
 exec = require('child_process').exec
 _ = require 'underscore'
 program = require 'commander'
@@ -12,16 +11,22 @@ server = require '../lib/server'
 directory = require '../lib/directory'
 parser = require '../lib/parser'
 render = require '../lib/render'
-root = path.resolve __dirname, '..'
-current = process.cwd()
-
-copyFileSync = (from, to) ->
-  fs.writeFileSync to, fs.readFileSync(from, 'utf8'), 'utf8'
 
 import_settings = ->
+  top = directory.root()
+  # check if directory valid
+  if top is null
+    throw 'using `catlog init` to initialize project directory'
+
   global_settings = require '../assets/settings'
-  local_settings = require path.join(current, 'settings.json')
+  local_settings = require path.join(top, 'settings.json')
   _.defaults local_settings, global_settings
+  # reset as relative path
+  local_settings.source = path.join top, local_settings.source
+  local_settings.destination = path.join top, local_settings.destination
+  local_settings.theme_path = path.join top, "themes/#{local_settings.theme}"
+  local_settings.plugin_path = path.join top, "plugins"
+  return local_settings
 
 create_post = (src, callback) ->
   if (src)
@@ -73,7 +78,7 @@ create_post = (src, callback) ->
   )
 
 cmd_init = ->
-  exec "cp -r #{root}/assets/* ."
+  exec "cp -r #{path.resolve __dirname, '..'}/assets/* ."
 
 cmd_post = ->
   create_post()
@@ -82,7 +87,7 @@ cmd_generate = ->
   settings = import_settings()
   # copy themes assets
   exec "rm -rf #{settings.destination}/theme", ->
-    exec "cp -r themes/#{settings.theme} #{settings.destination}/theme"
+    exec "cp -r #{settings.theme_path} #{settings.destination}/theme"
   # static file server
   if program.server isnt null
     server.run {

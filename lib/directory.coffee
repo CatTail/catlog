@@ -23,4 +23,10 @@ directory.list = (dir, filter) ->
       srcs.push src
   return srcs
 
+directory.root = ->
+  cur = process.cwd()
+  while cur isnt '/' and not fs.existsSync path.join(cur, 'settings.json')
+    cur = path.dirname cur
+  if fs.existsSync path.join(cur, 'settings.json') then cur else null
+
 module.exports = directory
