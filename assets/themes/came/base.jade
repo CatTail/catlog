@@ -25,6 +25,7 @@ html
         each category in site.categories
           li: a(href="/#{category}") #{category}
         li: a(href="/feed.xml") Feed
+        li: a(href="#{site.about_url}") About
     block content
     footer
       .aux

@@ -3,6 +3,7 @@
   "destination": "_post",
   "permalink_style": "date",
   "base_url": "/",
+  "about_url": "http://example.com",
   "port": "8081",
   "author": "author",
   "site_title": "site_title",
