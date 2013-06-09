@@ -69,3 +69,6 @@ nav li a {
   position: relative;
   overflow: hidden;
 }
+#content .meta {
+  font-size: 11px;
+}

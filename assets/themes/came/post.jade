@@ -2,4 +2,6 @@ extends base
 
 block content
   .aux
+    h1 #{post.name}
+    .meta #{post.date} created by #{post.author}
     section !{post.content}
