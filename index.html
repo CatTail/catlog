@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Catlog by CatTail</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Catlog</h1>
+        <h2>CatTail's static blog generator, Transform markdown post into htmls, with a lot of other functions.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/CatTail/catlog/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/CatTail/catlog/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/CatTail/catlog" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Catlog is a static site generator. It allow user to use markdown syntax to write post and publish it with html format. Catlog has a inner test server to allow you see post result after write it. It also support for self theme and plugin definition.</p>
+
+<p>Live demo <a href="http://blog.cattail.me">cattail.me</a></p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Simply type <code>npm install -g catlogjs</code> in console.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Type <code>catlog -h</code> in console, it will tell you how to use catlog.</p>
+
+<pre><code>Usage: catlog.coffee [options] [command]
+
+Commands:
+
+  init                   initialize project
+  migrate &lt;path&gt;         migrate already exist markdown file into catlog accepted directory construct
+  post                   generate post
+  generate               generate assets and html files
+
+Options:
+
+  -h, --help          output usage information
+  -V, --version       output the version number
+  -s --server [port]  start local server on port
+  -a --auto           watch for file change and auto update
+</code></pre>
+
+<h3>
+<a name="init" class="anchor" href="#init"><span class="octicon octicon-link"></span></a>init</h3>
+
+<p>Go to directory you want to create the blog, type <code>catlog init</code>, it will create  such directory structure <code>plugins  post  _post  settings.json  themes</code>. Change settings.json as you wish.</p>
+
+<h3>
+<a name="migrate" class="anchor" href="#migrate"><span class="octicon octicon-link"></span></a>migrate</h3>
+
+<p>If you already have a lot of markdown post files and want to migrate them into catlog blog structure, using <code>catlog migrate &lt;path&gt;</code>. It will prompt lost meta information needed for every markdown files.</p>
+
+<h3>
+<a name="post" class="anchor" href="#post"><span class="octicon octicon-link"></span></a>post</h3>
+
+<p>Want to create an new post? Fine, using <code>catlog post</code>. For the reason that catlog blog structure contain the meta info of posts, do not change the directory structure without knowning what it means. <code>post</code> command will handle this properly for you.</p>
+
+<h3>
+<a name="generate" class="anchor" href="#generate"><span class="octicon octicon-link"></span></a>generate</h3>
+
+<p>When you finish writing post and want to see the result, using <code>catlog generate</code> to generate html files.</p>
+
+<h3>
+<a name="options" class="anchor" href="#options"><span class="octicon octicon-link"></span></a>options</h3>
+
+<p>If you need local server add <code>--server</code> options, with <code>--auto</code> option added, change made in markdown file will auto re-generated into html.</p>
+
+<h2>
+<a name="theme" class="anchor" href="#theme"><span class="octicon octicon-link"></span></a>theme</h2>
+
+<h3>
+<a name="environment" class="anchor" href="#environment"><span class="octicon octicon-link"></span></a>environment</h3>
+
+<h4>
+<a name="site" class="anchor" href="#site"><span class="octicon octicon-link"></span></a>site</h4>
+
+<ul>
+<li>source</li>
+<li>destination</li>
+<li>theme_path</li>
+<li>plugin_path</li>
+<li>permalink_style</li>
+<li>base_url</li>
+<li>port</li>
+<li>author</li>
+<li>site_title</li>
+<li>site_url</li>
+<li>destination</li>
+<li>theme</li>
+<li>plugins</li>
+<li>categories</li>
+<li>posts</li>
+</ul><h4>
+<a name="post-1" class="anchor" href="#post-1"><span class="octicon octicon-link"></span></a>post</h4>
+
+<ul>
+<li>src</li>
+<li>title</li>
+<li>category</li>
+<li>date</li>
+<li>time</li>
+<li>author</li>
+<li>year</li>
+<li>month</li>
+<li>day</li>
+<li>permalink</li>
+<li>heading</li>
+<li>content
+could have self-defined variables</li>
+</ul><h2>
+<a name="plugin" class="anchor" href="#plugin"><span class="octicon octicon-link"></span></a>plugin</h2>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
