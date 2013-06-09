@@ -93,8 +93,8 @@ cmd_generate = ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme"
   # static file server
   if program.server isnt undefined
-    server.run {
-      path: settings.destination, port: program.server or settings.port}
+    port = if typeof program.server is 'boolean' then settings.port else program.server
+    server.run {path: settings.destination, port: port}
   # parse, render markdowns
   _.defaults settings, program.auto
   parser.parse settings, (env) ->
