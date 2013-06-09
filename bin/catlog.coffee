@@ -79,6 +79,9 @@ create_post = (src, callback) ->
 
 cmd_init = ->
   exec "cp -r #{path.resolve __dirname, '..'}/assets/* ."
+  global_settings = require '../assets/settings'
+  fs.mkdirSync global_settings.source
+  fs.mkdirSync global_settings.destination
 
 cmd_post = ->
   create_post()
@@ -104,7 +107,7 @@ cmd_migrate = (p) ->
     create_post src, callback
 
 program
-  .version('0.0.1')
+  .version(require('../package.json').version)
   .option('-s --server [port]', 'start local server on port')
   .option('-a --auto', 'watch for file change and auto update')
 
