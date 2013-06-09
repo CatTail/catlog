@@ -92,7 +92,7 @@ cmd_generate = ->
   exec "rm -rf #{settings.destination}/theme", ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme"
   # static file server
-  if program.server isnt null
+  if program.server isnt undefined
     server.run {
       path: settings.destination, port: program.server or settings.port}
   # parse, render markdowns
