@@ -53,13 +53,11 @@ parser.parse_post = (src, permalink_style, callback) ->
   post.permalink = permalink_style.replace(/:(\w+)/g, (match, item) ->
     return post[item.toLowerCase()]
   )
-  @parse_markdown fs.readFileSync(src, 'utf8'), (heading, content) ->
-    post.heading = heading
+  @parse_markdown fs.readFileSync(src, 'utf8'), (content) ->
     post.content = content
     callback and callback post
 
 parser.parse_markdown = (content, callback) ->
-  heading = null
   tokens = marked.lexer content
   async.forEach tokens, ((token, callback) ->
     if token.type is 'code'
@@ -68,14 +66,11 @@ parser.parse_markdown = (content, callback) ->
         token.text = data
         callback()
       ), {'P': 'nowrap=true'}
-    else if token.type is 'heading' and heading is null
-      heading = token.text
-      callback()
     else
       callback()
   ), ->
     content = marked.parser tokens
-    callback and callback(heading, content)
+    callback and callback(content)
 
 parser.parse_plugin = (plugin_path, plugins) ->
   for plugin, config of plugins

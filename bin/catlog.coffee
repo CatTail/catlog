@@ -39,6 +39,10 @@ create_post = (src, callback) ->
       program.prompt 'permalink title: ', (title) ->
         callback null, title
     ), ((callback) ->
+      # post name
+      program.prompt 'post name: ', (name) ->
+        callback null, name
+    ), ((callback) ->
       # category
       categories = fs.readdirSync settings.source
       categories.push('Add new category')
@@ -58,15 +62,17 @@ create_post = (src, callback) ->
   ], (err, results) ->
     # meta data
     title = results[0]
-    category = results[1]
-    author = results[2]
+    name = results[1]
+    category = results[2]
+    author = results[3]
     date = moment().format 'YYYY-MM-DD'
     time = moment().format 'HH:mm:ss'
     meta = """
       {
-        "author": "#{author}",
+        "name": "#{name}",
         "date": "#{date}",
-        "time": "#{time}"
+        "time": "#{time}",
+        "author": "#{author}"
       } 
       """
     basename = path.join settings.source, category, title
