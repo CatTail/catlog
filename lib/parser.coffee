@@ -32,12 +32,17 @@ parser.parse = (site, callback) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
   ), ((srcs) =>
     async.each srcs, ((src, callback) =>
-      post = @parse_post src, site.permalink_style, (post) ->
+      @parse_post src, site.permalink_style, (post) ->
         site.posts.push post
-        if site.categories.indexOf(post.category) is -1
-          site.categories.push post.category
         callback()
     ), ->
+      # sort
+      site.posts.sort (a, b) ->
+        new Date("#{b.date} #{b.time}") - new Date("#{a.date} #{a.time}")
+      # categories
+      for post in site.posts
+        if site.categories.indexOf(post.category) is -1
+          site.categories.push post.category
       callback(site)
   )
 
