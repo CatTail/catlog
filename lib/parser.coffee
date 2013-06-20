@@ -4,7 +4,6 @@ _ = require 'underscore'
 async = require 'async'
 marked = require 'marked'
 pygments = require 'pygments'
-ejs = require 'ejs'
 directory = require './directory'
 parser = {}
 
@@ -26,7 +25,6 @@ parser.permalink_styles = {
 parser.parse = (site, callback) ->
   site.categories = []
   site.posts = []
-  site.plugins = @parse_plugin site.plugin_path, site.plugins
   # date is the default permalink style
   site.permalink_style = @permalink_styles[site.permalink_style] or
     site.permalink_style or @permalink_styles.date
@@ -35,8 +33,6 @@ parser.parse = (site, callback) ->
   ), ((srcs) =>
     async.each srcs, ((src, callback) =>
       post = @parse_post src, site.permalink_style, (post) ->
-        # markdown content interpolation
-        post.content = ejs.render post.content, {post: post, site: site}
         site.posts.push post
         if site.categories.indexOf(post.category) is -1
           site.categories.push post.category
@@ -73,11 +69,5 @@ parser.parse_markdown = (content, callback) ->
   ), ->
     content = marked.parser tokens
     callback and callback(content)
-
-parser.parse_plugin = (plugin_path, plugins) ->
-  for plugin, config of plugins
-    raw = fs.readFileSync path.join(plugin_path, "#{plugin}.html"), 'utf8'
-    plugins[plugin] = ejs.render raw, config
-  return plugins
 
 module.exports = parser

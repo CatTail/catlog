@@ -102,7 +102,7 @@ cmd_generate = ->
     port = if typeof program.server is 'boolean' then settings.port else program.server
     server.run {path: settings.destination, port: port}
   # parse, render markdowns
-  _.defaults settings, program.auto
+  settings.auto = program.auto
   parser.parse settings, (env) ->
     render.render env
 
