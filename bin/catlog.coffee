@@ -13,20 +13,20 @@ parser = require '../lib/parser'
 render = require '../lib/render'
 
 import_settings = ->
-  top = directory.root()
-  # check if directory valid
-  if top is null
-    throw 'using `catlog init` to initialize project directory'
+  directory.root (top) ->
+    # check if directory valid
+    if top is null
+      throw 'using `catlog init` to initialize project directory'
 
-  global_settings = require '../assets/settings'
-  local_settings = require path.join(top, 'settings.json')
-  _.defaults local_settings, global_settings
-  # reset as relative path
-  local_settings.source = path.join top, local_settings.source
-  local_settings.destination = path.join top, local_settings.destination
-  local_settings.theme_path = path.join top, "themes/#{local_settings.theme}"
-  local_settings.plugin_path = path.join top, "plugins"
-  return local_settings
+    global_settings = require '../assets/settings'
+    local_settings = require path.join(top, 'settings.json')
+    _.defaults local_settings, global_settings
+    # reset as relative path
+    local_settings.source = path.join top, local_settings.source
+    local_settings.destination = path.join top, local_settings.destination
+    local_settings.theme_path = path.join top, "themes/#{local_settings.theme}"
+    local_settings.plugin_path = path.join top, "plugins"
+    return local_settings
 
 create_post = (src, callback) ->
   if (src)
@@ -107,10 +107,12 @@ cmd_generate = ->
     render.render env
 
 cmd_migrate = (p) ->
-  srcs = directory.list p, (src) ->
+  directory.list p, ((src) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
-  async.eachSeries srcs, (src, callback) ->
-    create_post src, callback
+  ), ((srcs) ->
+    async.eachSeries srcs, (src, callback) ->
+      create_post src, callback
+  )
 
 program
   .version(require('../package.json').version)

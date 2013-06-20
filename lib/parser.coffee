@@ -30,18 +30,20 @@ parser.parse = (site, callback) ->
   # date is the default permalink style
   site.permalink_style = @permalink_styles[site.permalink_style] or
     site.permalink_style or @permalink_styles.date
-  srcs = directory.list site.source, (src) ->
+  directory.list site.source, ((src) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
-  async.each srcs, ((src, callback) =>
-    post = @parse_post src, site.permalink_style, (post) ->
-      # markdown content interpolation
-      post.content = ejs.render post.content, {post: post, site: site}
-      site.posts.push post
-      if site.categories.indexOf(post.category) is -1
-        site.categories.push post.category
-      callback()
-  ), ->
-    callback(site)
+  ), ((srcs) =>
+    async.each srcs, ((src, callback) =>
+      post = @parse_post src, site.permalink_style, (post) ->
+        # markdown content interpolation
+        post.content = ejs.render post.content, {post: post, site: site}
+        site.posts.push post
+        if site.categories.indexOf(post.category) is -1
+          site.categories.push post.category
+        callback()
+    ), ->
+      callback(site)
+  )
 
 parser.parse_post = (src, permalink_style, callback) ->
   post = {}
