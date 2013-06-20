@@ -4,7 +4,8 @@
   "description": "CatTail's auto markdown blog generator",
   "main": "index.coffee",
   "scripts": {
-    "test": "coffee ./test/test.coffee"
+    "preinstall": "./bin/deps",
+    "test": "mocha ./test"
   },
   "repository": {
     "type": "git",
@@ -16,11 +17,9 @@
     "cattail"
   ],
   "dependencies": {
-    "coffee-script": "*",
     "marked": "*",
     "jade": "*",
     "ejs": "*",
-    "ncp": "*",
     "node-static": "*",
     "underscore": "*",
     "pygments": "*",

@@ -98,8 +98,11 @@ could have self-defined variables
 * 增加文档
 
 ## TODO
+* 为async增加conditional函数
 * 增加示例
 * 编写测试
 * 思考如何消除大量回调
-* 增加about等特殊页面的支持(当前使用了http://about.me)
+* 增加about等特殊页面的支持
 * 完善came样式(完善设计, 样式, 时间等)
+* 支持其他类型文件(除了md, 包括html, add lab)的转换
+* 相册

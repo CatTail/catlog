@@ -36,10 +36,14 @@ render.render = (site, callback) ->
 
 render.render_file = (fn, context, dest, callback) ->
   html = fn context
+  # FIXME see https://github.com/caolan/async/pull/272
   if not fs.existsSync path.dirname dest
-    directory.mkdir_parent path.dirname dest
-  fs.writeFileSync dest, html, 'utf8'
-  callback and callback()
+    directory.mkdir_parent path.dirname(dest), null, ->
+      fs.writeFileSync dest, html, 'utf8'
+      callback and callback()
+  else
+    fs.writeFileSync dest, html, 'utf8'
+    callback and callback()
 
 render.render_feed = (site, callback) ->
   feed = new rss {
