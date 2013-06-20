@@ -3,6 +3,7 @@ path = require 'path'
 _ = require 'underscore'
 async = require 'async'
 jade = require 'jade'
+ejs = require 'ejs'
 directory = require './directory'
 parser = require './parser'
 rss = require 'rss'
@@ -13,17 +14,24 @@ render.render = (site, callback) ->
   fn_post = @compile_template 'post', site.theme_path
   fn_index = @compile_template 'index', site.theme_path
   fn_list = @compile_template 'list', site.theme_path
+  site.plugins = @render_plugin site.plugin_path, site.plugins
   async.forEach site.posts, ((post, callback) =>
     dest = path.join(site.destination, post.permalink)
-    @render_file fn_post, {post: post, site: site}, dest, callback
     # copy post assets
     src_dir = path.join path.dirname(post.src), 'assets'
     dest_dir = path.dirname dest
     exec "cp -r #{src_dir} #{dest_dir}"
+    # render
+    # markdown content interpolation
+    post.content = ejs.render post.content, {post: post, site: site}
+    @render_file fn_post, {post: post, site: site}, dest, callback
     # auto change detect
-    site.auto and fs.watchFile post.src, {persistent: true, interval: 1000}, =>
-      console.log 'update'
-      @render_file fn_post, {site: site, post: post}, dest, callback
+    if site.auto
+      fs.watchFile post.src, {persistent: true, interval: 1000}, =>
+        console.log 'update'
+        parser.parse_post post.src, site.permalink_style, (post) =>
+          post.content = ejs.render post.content, {post: post, site: site}
+          @render_file fn_post, {site: site, post: post}, dest
   ), =>
     dest = path.join site.destination, 'index.html'
     @render_file fn_index, {site: site, posts: site.posts}, dest
@@ -68,5 +76,11 @@ render.compile_template = (filename, theme_path) ->
   filename = path.join theme_path, "#{filename}.jade"
   template = fs.readFileSync filename, 'utf8'
   jade.compile template, {filename: filename}
+
+render.render_plugin = (plugin_path, plugins) ->
+  for plugin, config of plugins
+    raw = fs.readFileSync path.join(plugin_path, "#{plugin}.html"), 'utf8'
+    plugins[plugin] = ejs.render raw, config
+  return plugins
 
 module.exports = render
