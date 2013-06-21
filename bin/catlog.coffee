@@ -13,7 +13,7 @@ parser = require '../lib/parser'
 render = require '../lib/render'
 
 import_settings = ->
-  directory.root (top) ->
+  directory.root 'settings.json', (top) ->
     # check if directory valid
     if top is null
       throw 'using `catlog init` to initialize project directory'

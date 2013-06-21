@@ -5,7 +5,7 @@
   "main": "index.coffee",
   "scripts": {
     "preinstall": "./bin/deps",
-    "test": "mocha ./test"
+    "test": "jasmine-node --coffee ./test"
   },
   "repository": {
     "type": "git",

@@ -96,13 +96,13 @@ could have self-defined variables
 * 允许在项目目录(即存在settings.json的任意子目录)运行catlog命令
 * 增加图片等其他资源文件支持(注意, 不合理的permalink_style定义可能导致资源覆盖)
 * 增加文档
+* 为async增加conditional函数(已comment到issue)
+* 思考如何消除大量回调([solution for javascript callback chain](http://blog.cattail.me/Tech/2013/06/18/solution-for-javascript-async-callback-chain/index.html))
 
 ## TODO
-* 为async增加conditional函数
-* 增加示例
 * 编写测试
-* 思考如何消除大量回调
+* 增加示例
 * 增加about等特殊页面的支持
 * 完善came样式(完善设计, 样式, 时间等)
-* 支持其他类型文件(除了md, 包括html, add lab)的转换
 * 相册
+* 支持其他类型文件(除了md, 包括html, add lab)的转换
