@@ -1,4 +1,4 @@
 #! /bin/bash
 
 npm install -g coffee-script
-npm install -g mocha
+npm install -g jasmine-node
