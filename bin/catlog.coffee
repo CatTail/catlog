@@ -96,15 +96,15 @@ cmd_generate = ->
   settings = import_settings()
   # copy themes assets
   exec "rm -rf #{settings.destination}/theme", ->
-    exec "cp -r #{settings.theme_path} #{settings.destination}/theme"
+    exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
+      # parse, render markdowns
+      settings.auto = program.auto
+      parser.parse settings, (env) ->
+        render.render env
   # static file server
   if program.server isnt undefined
     port = if typeof program.server is 'boolean' then settings.port else program.server
     server.run {path: settings.destination, port: port}
-  # parse, render markdowns
-  settings.auto = program.auto
-  parser.parse settings, (env) ->
-    render.render env
 
 cmd_migrate = (p) ->
   directory.list p, ((src) ->

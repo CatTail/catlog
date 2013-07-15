@@ -17,21 +17,30 @@ render.render = (site, callback) ->
   site.plugins = @render_plugin site.plugin_path, site.plugins
   async.forEach site.posts, ((post, callback) =>
     dest = path.join(site.destination, post.permalink)
-    # copy post assets
-    src_dir = path.join path.dirname(post.src), 'assets'
     dest_dir = path.dirname dest
-    exec "cp -r #{src_dir} #{dest_dir}"
-    # render
-    # markdown content interpolation
-    post.content = ejs.render post.content, {post: post, site: site}
-    @render_file fn_post, {post: post, site: site}, dest, callback
-    # auto change detect
-    if site.auto
-      fs.watchFile post.src, {persistent: true, interval: 1000}, =>
-        console.log 'update'
-        parser.parse_post post.src, site.permalink_style, (post) =>
-          post.content = ejs.render post.content, {post: post, site: site}
-          @render_file fn_post, {site: site, post: post}, dest
+    if post.type is 'html' # copy raw type assets
+      if not fs.existsSync dest_dir
+        directory.mkdir_parent dest_dir, null, ->
+          exec "cp -r #{path.dirname(post.src)}/* #{dest_dir}", ->
+            callback and callback()
+      else
+        exec "cp -r #{path.dirname(post.src)} #{dest_dir}"
+        callback and callback()
+    else
+      # copy post assets
+      src_dir = path.join path.dirname(post.src), 'assets'
+      exec "cp -r #{src_dir} #{dest_dir}"
+      # render
+      # markdown content interpolation
+      post.content = ejs.render post.content, {post: post, site: site}
+      @render_file fn_post, {post: post, site: site}, dest, callback
+      # auto change detect
+      if site.auto
+        fs.watchFile post.src, {persistent: true, interval: 1000}, =>
+          console.log 'update'
+          parser.parse_post post.src, site.permalink_style, (post) =>
+            post.content = ejs.render post.content, {post: post, site: site}
+            @render_file fn_post, {site: site, post: post}, dest
   ), =>
     dest = path.join site.destination, 'index.html'
     @render_file fn_index, {site: site, posts: site.posts}, dest
@@ -52,6 +61,8 @@ render.render_file = (fn, context, dest, callback) ->
   else
     fs.writeFileSync dest, html, 'utf8'
     callback and callback()
+
+render.render_raw = ->
 
 render.render_feed = (site, callback) ->
   feed = new rss {
