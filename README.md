@@ -81,6 +81,7 @@ could have self-defined variables
 ## Plugin
 
 ## ChangeLog
+* 增加静态html文件的直接发布
 * 将项目作为binary服务启动, 测试非同级目录下的生成情况
 * 将meta信息和markdown分离
 * 将分类信息集中在目录结构中, 并且统一将makrdown文件命名为index.md
