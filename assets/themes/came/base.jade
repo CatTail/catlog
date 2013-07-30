@@ -5,7 +5,7 @@ html
     meta(http-equiv="X-UA-Compatible", content="chrome=1")
     title
       if post
-        | #{post.heading}
+        | #{post.name}
       else
         | #{site.site_title} by #{site.author}
     link(rel="stylesheet", href="#{site.base_url}theme/stylesheets/gfm_markdown.css")
