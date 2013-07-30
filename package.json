@@ -1,6 +1,6 @@
 {
   "name": "catlogjs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "CatTail's auto markdown blog generator",
   "main": "index.coffee",
   "scripts": {
@@ -17,16 +17,16 @@
     "cattail"
   ],
   "dependencies": {
-    "marked": "*",
-    "jade": "*",
-    "ejs": "*",
-    "node-static": "*",
-    "underscore": "*",
-    "pygments": "*",
-    "async": "*",
-    "commander": "*",
-    "rss": "*",
-    "moment": "*"
+    "marked": "0.2.8",
+    "jade": "0.31.1",
+    "ejs": "0.8.4",
+    "node-static": "0.6.9",
+    "underscore": "1.4.4",
+    "pygments": "0.2.0",
+    "async": "0.2.8",
+    "commander": "1.1.1",
+    "rss": "0.0.4",
+    "moment": "2.0.0"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "MIT",
