@@ -19,13 +19,7 @@ render.render = (site, callback) ->
     dest = path.join(site.destination, post.permalink)
     dest_dir = path.dirname dest
     if post.type is 'html' # copy raw type assets
-      if not fs.existsSync dest_dir
-        directory.mkdir_parent dest_dir, null, ->
-          exec "cp -r #{path.dirname(post.src)}/* #{dest_dir}", ->
-            callback and callback()
-      else
-        exec "cp -r #{path.dirname(post.src)} #{dest_dir}"
-        callback and callback()
+      @render_raw path.dirname(post.src), dest_dir, callback
     else
       # copy post assets
       src_dir = path.join path.dirname(post.src), 'assets'
@@ -62,7 +56,14 @@ render.render_file = (fn, context, dest, callback) ->
     fs.writeFileSync dest, html, 'utf8'
     callback and callback()
 
-render.render_raw = ->
+render.render_raw = (src, dest, callback) ->
+  if not fs.existsSync dest
+    directory.mkdir_parent dest, null, ->
+      exec "cp -r #{src}/* #{dest}", ->
+        callback and callback()
+  else
+    exec "cp -r #{src}/* #{dest}", ->
+      callback and callback()
 
 render.render_feed = (site, callback) ->
   feed = new rss {
