@@ -1,5 +1,3 @@
-#! ./node_modules/.bin/coffee
-
 fs = require 'fs'
 path = require 'path'
 exec = require('child_process').exec
@@ -20,7 +18,7 @@ import_settings = ->
 
     global_settings = require '../assets/settings'
     local_settings = require path.join(top, 'settings.json')
-    _.defaults local_settings, global_settings
+    local_settings = _.clone _.defaults local_settings, global_settings
     # reset as relative path
     local_settings.source = path.join top, local_settings.source
     local_settings.destination = path.join top, local_settings.destination
