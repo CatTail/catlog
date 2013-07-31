@@ -1,10 +1,9 @@
 {
   "name": "catlogjs",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "CatTail's auto markdown blog generator",
   "main": "index.coffee",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/CatTail/catlog.git"
@@ -30,8 +29,9 @@
   "author": "zhongchiyu@gmail.com",
   "license": "MIT",
   "bin": {
-    "catlog": "./bin/catlog.coffee"
+    "catlog": "./bin/catlog"
   },
+  "preferGlobal": true,
   "directories": {
     "lib": "./lib",
     "bin": "./bin"
