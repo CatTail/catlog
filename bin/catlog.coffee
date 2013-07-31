@@ -1,4 +1,4 @@
-#! /usr/bin/env coffee
+#! ./node_modules/.bin/coffee
 
 fs = require 'fs'
 path = require 'path'

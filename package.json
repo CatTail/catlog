@@ -4,8 +4,6 @@
   "description": "CatTail's auto markdown blog generator",
   "main": "index.coffee",
   "scripts": {
-    "preinstall": "./bin/deps",
-    "test": "jasmine-node --coffee ./test"
   },
   "repository": {
     "type": "git",
@@ -17,16 +15,17 @@
     "cattail"
   ],
   "dependencies": {
-    "marked": "0.2.8",
-    "jade": "0.31.1",
-    "ejs": "0.8.4",
-    "node-static": "0.6.9",
+    "marked": "~0.2.8",
+    "jade": "~0.31.1",
+    "ejs": "~0.8.4",
+    "node-static": "~0.6.9",
     "underscore": "1.4.4",
-    "pygments": "0.2.0",
-    "async": "0.2.8",
-    "commander": "1.1.1",
-    "rss": "0.0.4",
-    "moment": "2.0.0"
+    "pygments": "~0.2.0",
+    "async": "~0.2.8",
+    "commander": "~1.1.1",
+    "rss": "~0.0.4",
+    "moment": "~2.0.0",
+    "coffee-script": "~1.6.3"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "MIT",
@@ -36,8 +35,5 @@
   "directories": {
     "lib": "./lib",
     "bin": "./bin"
-  },
-  "devDependencies": {
-    "coffee-script": "~1.6.3"
   }
 }
