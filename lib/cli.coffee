@@ -4,6 +4,7 @@ exec = require('child_process').exec
 _ = require 'underscore'
 program = require 'commander'
 inquirer = require 'inquirer'
+colors = require 'colors'
 moment = require 'moment'
 async = require 'async'
 server = require '../lib/server'
@@ -11,11 +12,25 @@ directory = require '../lib/directory'
 parser = require '../lib/parser'
 render = require '../lib/render'
 
+colors.setTheme({
+  silly: 'rainbow'
+  input: 'grey'
+  verbose: 'cyan'
+  prompt: 'grey'
+  info: 'green'
+  data: 'grey'
+  help: 'cyan'
+  warn: 'yellow'
+  debug: 'blue'
+  error: 'red'
+})
+
 import_settings = ->
   directory.root 'settings.json', (top) ->
     # check if directory valid
     if top is null
-      throw 'using `catlog init` to initialize project directory'
+      console.log 'using `catlog init` to initialize project directory'.error
+      process.exit()
 
     global_settings = require '../assets/settings'
     local_settings = require path.join(top, 'settings.json')
@@ -95,48 +110,63 @@ create_post = (src, callback) ->
     callback and callback()
 
 cmd_init = ->
-  exec "cp -r #{path.resolve __dirname, '..'}/assets/* ."
-  global_settings = require '../assets/settings'
-  fs.mkdirSync global_settings.source
-  fs.mkdirSync global_settings.destination
+  init = ->
+    exec "cp -r #{path.resolve __dirname, '..'}/assets/* ."
+    global_settings = require '../assets/settings'
+    fs.mkdirSync global_settings.source
+    fs.mkdirSync global_settings.destination
+  if not fs.readdirSync('.').length
+    init()
+  else
+    inquirer.prompt {
+      type: 'confirm'
+      name: 'ifProcess'
+      message: 'Current directory not empty, do you really want to process?'
+      default: false
+    }, (answers) ->
+      if answers.ifProcess
+        init()
 
 cmd_post = ->
   create_post '', ->
     process.stdin.destroy()
 
-cmd_build = ->
+cmd_build = (args) ->
   settings = import_settings()
-  console.log 'copying theme'
+  console.log 'copying theme'.info
   exec "rm -rf #{settings.destination}/theme", ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
-      console.log 'parsing markdown'
-      settings.auto = program.auto
+      console.log 'parsing markdown'.info
+      settings.auto = args.auto
       parser.parse settings, (env) ->
-        console.log 'rendering html'
+        console.log 'rendering html'.info
         render.render env
-  # static file server
-  if program.server isnt undefined
-    port = if typeof program.server is 'boolean' then settings.port else program.server
-    server.run {path: settings.destination, port: port}
+        # static file server
+        if args.server isnt undefined
+          if typeof args.server is 'boolean'
+            port = settings.port
+          else
+            port = args.server
+          server.run {path: settings.destination, port: port}
 
-cmd_preview = ->
+cmd_preview = (args) ->
   dest = path.join '/tmp', parseInt(Math.random()*1000, 10)+''
   fs.mkdirSync dest
   settings = import_settings()
-  console.log 'copying theme'
+  console.log 'copying theme'.info
   exec "rm -rf #{settings.destination}/theme", ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
-      settings.auto = program.auto
-      console.log 'parsing markdown'
+      settings.auto = args.auto
+      console.log 'parsing markdown'.info
       parser.parse settings, (env) ->
-        console.log 'rendering markdown'
+        console.log 'rendering markdown'.info
         render.render env
-  # static file server
-  if program.server isnt undefined and typeof program.server isnt 'boolean'
-    port = program.server
-  else
-    port = settings.port
-  server.run {path: settings.destination, port: port}
+        # static file server
+        if args.server isnt undefined and typeof args.server isnt 'boolean'
+          port = args.server
+        else
+          port = settings.port
+        server.run {path: settings.destination, port: port}
 
 cmd_migrate = (p) ->
   directory.list p, ((src) ->
@@ -148,68 +178,19 @@ cmd_migrate = (p) ->
       process.stdin.destroy()
   )
 
-help_init = """
-- catlog init 
-
-usage: catlog init
-	
-initialize a skeleton site,before it,you should make a new directory to hold it.
-
-example:
-	   
-create a new site in your home directory
-
-    $ mkdir ~/my-blog
-    $ catlog init
-"""
-help_post = """
-- catlog post
-
-usage: catlog post
-
-add a new blog, then you will need to provide some info for it, for example, postname、category、permalink title、author.
-"""
-help_preview = """
-- catlog preview
-
-usage:catlog preview [options]
-
-options:
-
-  -p, --port [port]             port to run server on (defaults to 8080)
-  
-  -a, --author 					 the default author name
-  
-  -t, --theme					 the site theme (defaults to came)
-
-
-  all options can also be set in the settings file, include the plugin、 site_title、 source path、 destination path。
-
-examples:
-
-  preview using a setting file (assuming settings.json is found in working directory):
-  $ catlog preview
-"""
-help_build = """
-- catlog build
-"""
 cmd_help = (cmd) ->
-  switch cmd
-    when 'init' then console.log help_init
-    when 'post' then console.log help_post
-    when 'build' then console.log help_build
-    when 'preview' then console.log help_preview
-    else program.help()
-
+  if cmd
+    command = _.find program.commands, (command) -> command._name is cmd
+    command.outputHelp()
+  else
+    program.help()
 
 program
   .version(require('../package.json').version)
-  .option('-s --server [port]', 'start local server')
-  .option('-a --auto', 'watch for file change and auto update')
 
 program
   .command('init')
-  .description('initialize project')
+  .description('initialize project, create new directory before initialize')
   .action(cmd_init)
 
 program
@@ -225,11 +206,15 @@ program
 program
   .command('build')
   .description('build html files')
+  .option('-s --server [port]', 'start local server')
+  .option('-a --auto', 'watch for file change and auto update')
   .action(cmd_build)
 
 program
   .command('preview')
   .description('preview generated html files')
+  .option('-s --server [port]', 'start local server')
+  .option('-a --auto', 'watch for file change and auto update')
   .action(cmd_preview)
 
 program

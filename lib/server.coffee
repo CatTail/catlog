@@ -11,7 +11,8 @@ server.run = (options) ->
     )).resume()
   ).listen(options.port)
 
+  console.log "start local server #{options.port}".info
+  console.log "server running on: http://localhost:#{options.port}".info
   open "http://localhost:#{options.port}"
-  console.log "listen on #{options.path} with port #{options.port}"
 
 module.exports = server
