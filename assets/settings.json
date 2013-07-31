@@ -1,6 +1,6 @@
 {
-  "source": "./post",
-  "destination": "_post",
+  "source": "contents",
+  "destination": "build",
   "permalink_style": "date",
   "base_url": "/",
   "about_url": "http://about.me",

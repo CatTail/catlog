@@ -3,6 +3,7 @@ path = require 'path'
 exec = require('child_process').exec
 _ = require 'underscore'
 program = require 'commander'
+inquirer = require 'inquirer'
 moment = require 'moment'
 async = require 'async'
 server = require '../lib/server'
@@ -31,38 +32,52 @@ create_post = (src, callback) ->
     console.log "Original markdown file #{src}"
     content = fs.readFileSync src, 'utf8'
   settings = import_settings()
-  async.series([
-    ((callback) ->
-      # permalink title
-      program.prompt 'permalink title: ', (title) ->
-        callback null, title
-    ), ((callback) ->
-      # post name
-      program.prompt 'post name: ', (name) ->
-        callback null, name
-    ), ((callback) ->
-      # category
-      categories = fs.readdirSync settings.source
-      categories.push('Add new category')
-      console.log 'category:'
-      program.choose categories, (index, category) ->
-        if index is (categories.length-1)
-          program.prompt 'category name: ', (category) ->
-            fs.mkdirSync path.join(settings.source, category)
-            callback null, category
-        else
-          callback null, category
-    ), ((callback) ->
-      # author
-      program.prompt 'author(blank to use default settings): ', (author) ->
-        callback null, author or settings.author
-    )
-  ], (err, results) ->
+
+  categories = fs.readdirSync settings.source
+  newCategory = 'Add new category'
+  categories.push newCategory
+  questions = [
+    {
+      type: 'input'
+      name: 'name'
+      message: 'write your post name'
+    }
+    {
+      type: 'list'
+      name: 'category'
+      message: 'choose post category'
+      choices: categories
+    }
+    {
+      type: 'input'
+      name: 'category'
+      message: 'input new category name'
+      validate: (value) -> value.length isnt 0
+      filter: (category) ->
+        fs.mkdirSync path.join(settings.source, category)
+        return category
+      when: (answers) ->
+        return answers.category is newCategory
+    }
+    {
+      type: 'input'
+      name: 'title'
+      message: 'input new permalink title'
+      validate: (value) -> value.length isnt 0
+    }
+    {
+      type: 'input'
+      name: 'author'
+      message: 'input author name'
+      default: settings.author
+    }
+  ]
+  inquirer.prompt questions, (answers) ->
     # meta data
-    title = results[0]
-    name = results[1]
-    category = results[2]
-    author = results[3]
+    title = answers.title
+    name = answers.name
+    category = answers.category
+    author = answers.author
     date = moment().format 'YYYY-MM-DD'
     time = moment().format 'HH:mm:ss'
     meta = """
@@ -77,8 +92,7 @@ create_post = (src, callback) ->
     fs.mkdirSync basename
     fs.writeFileSync path.join(basename, 'meta.json'), meta, 'utf8'
     fs.writeFileSync path.join(basename, 'index.md'), content or '', 'utf8'
-    callback && callback()
-  )
+    callback and callback()
 
 cmd_init = ->
   exec "cp -r #{path.resolve __dirname, '..'}/assets/* ."
@@ -95,9 +109,10 @@ cmd_build = ->
   console.log 'copying theme'
   exec "rm -rf #{settings.destination}/theme", ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
-      # parse, render markdowns
+      console.log 'parsing markdown'
       settings.auto = program.auto
       parser.parse settings, (env) ->
+        console.log 'rendering html'
         render.render env
   # static file server
   if program.server isnt undefined
@@ -111,9 +126,10 @@ cmd_preview = ->
   console.log 'copying theme'
   exec "rm -rf #{settings.destination}/theme", ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
-      # parse, render markdowns
       settings.auto = program.auto
+      console.log 'parsing markdown'
       parser.parse settings, (env) ->
+        console.log 'rendering markdown'
         render.render env
   # static file server
   if program.server isnt undefined and typeof program.server isnt 'boolean'
@@ -131,6 +147,60 @@ cmd_migrate = (p) ->
     ), ->
       process.stdin.destroy()
   )
+
+help_init = """
+- catlog init 
+
+usage: catlog init
+	
+initialize a skeleton site,before it,you should make a new directory to hold it.
+
+example:
+	   
+create a new site in your home directory
+
+    $ mkdir ~/my-blog
+    $ catlog init
+"""
+help_post = """
+- catlog post
+
+usage: catlog post
+
+add a new blog, then you will need to provide some info for it, for example, postname、category、permalink title、author.
+"""
+help_preview = """
+- catlog preview
+
+usage:catlog preview [options]
+
+options:
+
+  -p, --port [port]             port to run server on (defaults to 8080)
+  
+  -a, --author 					 the default author name
+  
+  -t, --theme					 the site theme (defaults to came)
+
+
+  all options can also be set in the settings file, include the plugin、 site_title、 source path、 destination path。
+
+examples:
+
+  preview using a setting file (assuming settings.json is found in working directory):
+  $ catlog preview
+"""
+help_build = """
+- catlog build
+"""
+cmd_help = (cmd) ->
+  switch cmd
+    when 'init' then console.log help_init
+    when 'post' then console.log help_post
+    when 'build' then console.log help_build
+    when 'preview' then console.log help_preview
+    else program.help()
+
 
 program
   .version(require('../package.json').version)
@@ -161,5 +231,10 @@ program
   .command('preview')
   .description('preview generated html files')
   .action(cmd_preview)
+
+program
+  .command('help [cmd]')
+  .description('display command description')
+  .action(cmd_help)
 
 program.parse process.argv
