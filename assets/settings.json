@@ -4,7 +4,7 @@
   "permalink_style": "date",
   "base_url": "/",
   "about_url": "http://about.me",
-  "port": "8081",
+  "port": "8080",
   "author": "author",
   "site_title": "site_title",
   "site_url": "http://example.com",

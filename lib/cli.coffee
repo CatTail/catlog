@@ -90,9 +90,9 @@ cmd_post = ->
   create_post '', ->
     process.stdin.destroy()
 
-cmd_generate = ->
+cmd_build = ->
   settings = import_settings()
-  # copy themes assets
+  console.log 'copying theme'
   exec "rm -rf #{settings.destination}/theme", ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
       # parse, render markdowns
@@ -103,6 +103,24 @@ cmd_generate = ->
   if program.server isnt undefined
     port = if typeof program.server is 'boolean' then settings.port else program.server
     server.run {path: settings.destination, port: port}
+
+cmd_preview = ->
+  dest = path.join '/tmp', parseInt(Math.random()*1000, 10)+''
+  fs.mkdirSync dest
+  settings = import_settings()
+  console.log 'copying theme'
+  exec "rm -rf #{settings.destination}/theme", ->
+    exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
+      # parse, render markdowns
+      settings.auto = program.auto
+      parser.parse settings, (env) ->
+        render.render env
+  # static file server
+  if program.server isnt undefined and typeof program.server isnt 'boolean'
+    port = program.server
+  else
+    port = settings.port
+  server.run {path: settings.destination, port: port}
 
 cmd_migrate = (p) ->
   directory.list p, ((src) ->
@@ -116,7 +134,7 @@ cmd_migrate = (p) ->
 
 program
   .version(require('../package.json').version)
-  .option('-s --server [port]', 'start local server on port')
+  .option('-s --server [port]', 'start local server')
   .option('-a --auto', 'watch for file change and auto update')
 
 program
@@ -126,23 +144,22 @@ program
 
 program
   .command('migrate <path>')
-  .description('migrate already exist markdown file into catlog accepted 
-directory construct')
+  .description('migrate exist markdown file into project')
   .action(cmd_migrate)
 
 program
   .command('post')
-  .description('generate post')
+  .description('create post')
   .action(cmd_post)
 
 program
-  .command('generate')
-  .description('generate assets and html files')
-  .action(cmd_generate)
+  .command('build')
+  .description('build html files')
+  .action(cmd_build)
 
 program
-  .command('*')
-  .description('Unknown command')
-  .action -> console.log 'Invalid command, see `catlog --help` for more info'
+  .command('preview')
+  .description('preview generated html files')
+  .action(cmd_preview)
 
 program.parse process.argv
