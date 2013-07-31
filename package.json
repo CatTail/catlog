@@ -24,7 +24,8 @@
     "commander": "~1.1.1",
     "rss": "~0.0.4",
     "moment": "~2.0.0",
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.6.3",
+    "open": "0.0.4"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "MIT",
