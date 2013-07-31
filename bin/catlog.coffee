@@ -79,7 +79,6 @@ create_post = (src, callback) ->
     fs.mkdirSync basename
     fs.writeFileSync path.join(basename, 'meta.json'), meta, 'utf8'
     fs.writeFileSync path.join(basename, 'index.md'), content or '', 'utf8'
-    process.stdin.destroy()
     callback && callback()
   )
 
@@ -90,7 +89,8 @@ cmd_init = ->
   fs.mkdirSync global_settings.destination
 
 cmd_post = ->
-  create_post()
+  create_post '', ->
+    process.stdin.destroy()
 
 cmd_generate = ->
   settings = import_settings()
@@ -110,8 +110,10 @@ cmd_migrate = (p) ->
   directory.list p, ((src) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
   ), ((srcs) ->
-    async.eachSeries srcs, (src, callback) ->
+    async.eachSeries srcs, ((src, callback) ->
       create_post src, callback
+    ), ->
+      process.stdin.destroy()
   )
 
 program
