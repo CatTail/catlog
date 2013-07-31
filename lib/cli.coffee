@@ -111,10 +111,16 @@ create_post = (src, callback) ->
 
 cmd_init = ->
   init = ->
-    exec "cp -r #{path.resolve __dirname, '..'}/assets/* ."
     global_settings = require '../assets/settings'
-    fs.mkdirSync global_settings.source
-    fs.mkdirSync global_settings.destination
+    root = path.resolve __dirname, '..'
+    src = global_settings.source
+    dest = global_settings.destination
+    fs.mkdirSync src
+    fs.mkdirSync dest
+    exec "cp -r #{root}/assets/plugins ."
+    exec "cp -r #{root}/assets/themes ."
+    exec "cp #{root}/assets/settings.json ."
+    exec "cp -r #{root}/assets/about #{src}"
   if not fs.readdirSync('.').length
     init()
   else
