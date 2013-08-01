@@ -7,6 +7,7 @@ inquirer = require 'inquirer'
 colors = require 'colors'
 moment = require 'moment'
 async = require 'async'
+temp = require 'temp'
 server = require '../lib/server'
 directory = require '../lib/directory'
 parser = require '../lib/parser'
@@ -163,24 +164,23 @@ cmd_build = (args) ->
           server.run {path: settings.destination, port: port}
 
 cmd_preview = (args) ->
-  dest = path.join '/tmp', parseInt(Math.random()*10000, 10)+''
-  fs.mkdirSync dest
-  settings = import_settings()
-  settings.destination = dest
-  console.log 'copying theme'.info
-  exec "rm -rf #{settings.destination}/theme", ->
-    exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
-      settings.auto = args.auto
-      console.log 'parsing markdown'.info
-      parser.parse settings, (env) ->
-        console.log 'rendering markdown'.info
-        render.render env
-        # static file server
-        if args.server isnt undefined and typeof args.server isnt 'boolean'
-          port = args.server
-        else
-          port = settings.port
-        server.run {path: settings.destination, port: port}
+  temp.mkdir 'catlog', (err, dirPath) ->
+    settings = import_settings()
+    settings.destination = dirPath
+    console.log 'copying theme'.info
+    exec "rm -rf #{settings.destination}/theme", ->
+      exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
+        settings.auto = args.auto
+        console.log 'parsing markdown'.info
+        parser.parse settings, (env) ->
+          console.log 'rendering markdown'.info
+          render.render env
+          # static file server
+          if args.server isnt undefined and typeof args.server isnt 'boolean'
+            port = args.server
+          else
+            port = settings.port
+          server.run {path: settings.destination, port: port}
 
 cmd_migrate = (p) ->
   directory.list p, ((src) ->
