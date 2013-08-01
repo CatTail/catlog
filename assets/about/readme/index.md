@@ -5,40 +5,47 @@
 Catlog is a static site generator. It allow users to use markdown syntax to write post and publish it with html format. Catlog has a inner test server to allow you see post result after write it. It also support for self theme and plugin definition.
 
 Live demo [blog.cattail.me](http://blog.cattail.me)
-```js
-var a = 0;
-```
 
 ## Quick-start
 First install catlog with npm:
-	
-	$ npm install -g catlogjs
-	
+
+```bash
+$ npm install -g catlogjs
+```
+
 This will install catlog globally on your system so that you can access the catlog command from anywhere. Once that you can view help:
 
-	$ catlog -h
+```bash
+$ catlog -h
+```
 	
 it will tell you how to use catlog.
 
 Create a directory for your website, get inside of it, and initialize an empty catlog project:
 	
-	$ mkdir my-website
-	$ cd my-website
-	$ catlog init
-	
+```bash
+$ mkdir my-website
+$ cd my-website
+$ catlog init
+```
+
 This creates a skeleton site with a basic set of templates.
 
 
 Want to create an new post? 
 
-	$ catlog post
+```bash
+$ catlog post
+```
 	
 then you will need to provide some info for it.
 
-	postname: 文章名称
-	category: 选择已创建类别，或者创建新的类别（这会给你在网站上添加一个新的导航项)
-	author(blank to use default settings): 文章作者名
-	permalink title: 固定链接，为了美观，请尽量使用英文
+```bash
+postname: 文章名称
+category: 选择已创建类别，或者创建新的类别（这会给你在网站上添加一个新的导航项)
+author(blank to use default settings): 文章作者名
+permalink title: 固定链接，为了美观，请尽量使用英文
+```
 		
 when done, you will have a subdirectory in post folder: post/category_name/permalink_title.There will be a index.md and a meta.json file. The index.md is where you write your post, and the meta.json file holds some info of your post.
 	
@@ -46,13 +53,16 @@ The catlog blog structure contain the meta info of posts, do not change the dire
 
 If you already have a lot of markdown post files and want to migrate them into catlog blog structure, run:
 
-	$ catlog migrate <path> 
+```bash
+$ catlog migrate <path> 
+```
 
 It will prompt lost meta information needed for every markdown files.
 
 When you finish writing post and want to preview it on local server, you should run:
 
-	$ catlog preview [-s] [-a] 
+```bash
+$ catlog preview [-s] [-a] 
 	
 options:
 	
@@ -60,10 +70,14 @@ options:
 	-a: watch for file change and auto update
 	--server [port]: the same effect as -s [port]
 	--auto: the same effect as -a
+```
 
 Then you can build your site.
 
-	$ catlog build 
+```bash
+$ catlog build 
+```
+
 This generates your site and places it in the build/ directory - all ready to be copied to your web server!
 
 ## Theme
@@ -102,38 +116,41 @@ could have self-defined variables
 
 ## Plugin
 Catlog itself bring with three plugins:
+
 * [Google Analytics](http://www.google.com/analytics/)
 * [Disqus](http://disqus.com/)
 * [Qudian](http://qudian.so/)
 
 In your website root directory, change settings.json `plugins` field.  Following is a example configuration file 
 
-        {
-          "source": "./post",
-          "destination": "_post",
-          "permalink_style": "date",
-          "base_url": "/",
-          "about_url": "http://about.me/cattail",
-          "port": "8081",
-          "author": "CatTail",
-          "site_title": "Catblog",
-          "site_url": "http://blog.cattail.me",
-          "description": "",
-          "theme": "came",
-          "plugins": {
-            "ga": {
-              "trackingID": "UA-41494270-1",
-              "domain": "cattail.me"
-            },
-            "disqus": {
-              "disqus_shortname": "cattail"
-            },
-            "qudian": {
-              "auth_key_id": "1362799309",
-              "auth_key_secret":  			 			"44fc9ea58e1697c85506d305a20dbfea"
-            }
-          }
-        }
+```json
+{
+  "source": "./post",
+  "destination": "_post",
+  "permalink_style": "date",
+  "base_url": "/",
+  "about_url": "http://about.me/cattail",
+  "port": "8081",
+  "author": "CatTail",
+  "site_title": "Catblog",
+  "site_url": "http://blog.cattail.me",
+  "description": "",
+  "theme": "came",
+  "plugins": {
+    "ga": {
+      "trackingID": "UA-41494270-1",
+      "domain": "cattail.me"
+    },
+    "disqus": {
+      "disqus_shortname": "cattail"
+    },
+    "qudian": {
+      "auth_key_id": "1362799309",
+      "auth_key_secret": "44fc9ea58e1697c85506d305a20dbfea"
+    }
+  }
+}
+```
 
 ## ChangeLog
 * 增加静态html文件的直接发布
@@ -162,8 +179,3 @@ In your website root directory, change settings.json `plugins` field.  Following
 * 完善came样式(完善设计, 样式, 时间等)
 * 相册
 * 支持其他类型文件(除了md, 包括html, add lab)的转换
-
-
-
-
-
