@@ -3,7 +3,6 @@ path = require 'path'
 _ = require 'underscore'
 async = require 'async'
 marked = require 'marked'
-pygments = require 'pygments'
 directory = require './directory'
 parser = {}
 
@@ -14,7 +13,7 @@ marked.setOptions {
   pedantic: false
   sanitize: true
   smartLists: true
-  langPrefix: 'highlight lang-'
+  langPrefix: 'prettyprint lang-'
 }
 
 parser.permalink_styles = {
@@ -65,18 +64,7 @@ parser.parse_post = (src, permalink_style, callback) ->
     callback and callback post
 
 parser.parse_markdown = (content, callback) ->
-  tokens = marked.lexer content
-  async.forEach tokens, ((token, callback) ->
-    if token.type is 'code'
-      pygments.colorize token.text, token.lang, 'html', ((data) ->
-        token.escaped = true
-        token.text = data
-        callback()
-      ), {'P': 'nowrap=true'}
-    else
-      callback()
-  ), ->
-    content = marked.parser tokens
-    callback and callback(content)
+  content = marked.parser marked.lexer content
+  callback and callback(content)
 
 module.exports = parser

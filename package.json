@@ -19,7 +19,6 @@
     "ejs": "~0.8.4",
     "node-static": "~0.6.9",
     "underscore": "1.4.4",
-    "pygments": "~0.2.0",
     "async": "~0.2.8",
     "rss": "~0.0.4",
     "moment": "~2.0.0",
