@@ -1,6 +1,5 @@
-fs = require 'fs'
+fs = require 'fs-extra'
 path = require 'path'
-exec = require('child_process').exec
 _ = require 'underscore'
 program = require 'commander'
 inquirer = require 'inquirer'
@@ -122,13 +121,13 @@ cmd_init = ->
     fs.mkdirSync dest
     console.log 'creates a skeleton site with a basic set of templates'.info
     console.log 'copying plugins'.info
-    exec "cp -r #{root}/assets/plugins .", ->
+    fs.copy "#{root}/assets/plugins", 'plugins', ->
       console.log 'copying themes'.info
-      exec "cp -r #{root}/assets/themes .", ->
+      fs.copy "#{root}/assets/themes", 'themes', ->
         console.log 'copying settings'.info
-        exec "cp #{root}/assets/settings.json .", ->
+        fs.copy "#{root}/assets/settings.json", 'settings.json', ->
           console.log 'copying default blog content'.info
-          exec "cp -r #{root}/assets/examples #{src}"
+          fs.copy "#{root}/assets/examples", "#{src}/examples", ->
   if not fs.readdirSync('.').length
     init()
   else
@@ -148,40 +147,39 @@ cmd_post = ->
 cmd_build = (args) ->
   settings = import_settings()
   console.log 'copying theme'.info
-  exec "rm -rf #{settings.destination}/theme", ->
-    exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
-      console.log 'parsing markdown'.info
-      settings.auto = args.auto
-      parser.parse settings, (env) ->
-        console.log 'rendering html'.info
-        render.render env
-        # static file server
-        if args.server isnt undefined
-          if typeof args.server is 'boolean'
-            port = settings.port
-          else
-            port = args.server
-          server.run {path: settings.destination, port: port}
+  fs.copy "#{settings.theme_path}", "#{settings.destination}/theme", ->
+    console.log 'pars markdown'.info
+    settings.auto = args.auto
+    parser.parse settings, (env) ->
+      console.log 'render html'.info
+      render.render env
+      # static file server
+      if args.server isnt undefined
+        if typeof args.server is 'boolean'
+          port = settings.port
+        else
+          port = args.server
+        server.run {path: settings.destination, port: port}
 
 cmd_preview = (args) ->
   temp.mkdir 'catlog', (err, dirPath) ->
+    console.log "create temp directory #{dirPath}".info
     settings = import_settings()
     settings.destination = dirPath
     settings.base_url = '/' # local server always use root
-    console.log 'copying theme'.info
-    exec "rm -rf #{settings.destination}/theme", ->
-      exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
-        settings.auto = args.auto
-        console.log 'parsing markdown'.info
-        parser.parse settings, (env) ->
-          console.log 'rendering markdown'.info
-          render.render env
-          # static file server
-          if args.server isnt undefined and typeof args.server isnt 'boolean'
-            port = args.server
-          else
-            port = settings.port
-          server.run {path: settings.destination, port: port}
+    console.log 'copy theme'.info
+    fs.copy "#{settings.theme_path}", "#{settings.destination}/theme", ->
+      settings.auto = args.auto
+      console.log 'pars markdown'.info
+      parser.parse settings, (env) ->
+        console.log 'render markdown'.info
+        render.render env
+        # static file server
+        if args.server isnt undefined and typeof args.server isnt 'boolean'
+          port = args.server
+        else
+          port = settings.port
+        server.run {path: settings.destination, port: port}
 
 cmd_migrate = (p) ->
   directory.list p, ((src) ->
@@ -209,14 +207,16 @@ program
   .action(cmd_init)
 
 program
-  .command('migrate <path>')
-  .description('migrate exist markdown file into project')
-  .action(cmd_migrate)
-
-program
   .command('post')
   .description('create post')
   .action(cmd_post)
+
+program
+  .command('preview')
+  .description('preview generated html files')
+  .option('-s --server [port]', 'start local server')
+  .option('-a --auto', 'watch for file change and auto update')
+  .action(cmd_preview)
 
 program
   .command('build')
@@ -226,11 +226,9 @@ program
   .action(cmd_build)
 
 program
-  .command('preview')
-  .description('preview generated html files')
-  .option('-s --server [port]', 'start local server')
-  .option('-a --auto', 'watch for file change and auto update')
-  .action(cmd_preview)
+  .command('migrate <path>')
+  .description('migrate exist markdown file into project')
+  .action(cmd_migrate)
 
 program
   .command('help [cmd]')
