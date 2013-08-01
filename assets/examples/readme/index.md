@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/CatTail/catlog.png?branch=develop)](https://travis-ci.org/CatTail/catlog)
 
 ## Introduction
-Catlog is a static site generator. It allow users to use markdown syntax to write post and publish it with html format. Catlog has a inner test server to allow you see post result after write it. It also support for self theme and plugin definition.
+Catlog is a static site generator. It allow users to use markdown syntax to write blog article and publish it with html format. Catlog has a inner test server to allow you see your blog after write it. It also support for self theme and plugin definition.
 
 Live demo [blog.cattail.me](http://blog.cattail.me)
 
@@ -32,26 +32,26 @@ $ catlog init
 This creates a skeleton site with a basic set of templates.
 
 
-Want to create an new post? 
+Want to create an new blog? 
 
 ```bash
-$ catlog post
+$ catlog publish
 ```
 	
 then you will need to provide some info for it.
 
 ```bash
-postname: 文章名称
-category: 选择已创建类别，或者创建新的类别（这会给你在网站上添加一个新的导航项)
-author(blank to use default settings): 文章作者名
-permalink title: 固定链接，为了美观，请尽量使用英文
+write your article name: 文章名称
+choose article category: 选择已创建类别，或者创建新的类别（这会给你在网站上添加一个新的导航项)
+input new permalink title: 固定链接，为了美观，请尽量使用英文
+input author name: 文章作者名
 ```
 		
-when done, you will have a subdirectory in post folder: post/category_name/permalink_title.There will be a index.md and a meta.json file. The index.md is where you write your post, and the meta.json file holds some info of your post.
+when done, you will have a subdirectory in contents folder: contents/category_name/permalink_title.There will be a index.md and a meta.json file. The index.md is where you write your article, and the meta.json file holds some info of your article.
 	
-The catlog blog structure contain the meta info of posts, do not change the directory structure without knowning what it means. `post` command will handle this properly for you.
+The catlog blog structure contain the meta info of articles, do not change the directory structure without knowning what it means. `publish` command will handle this properly for you.
 
-If you already have a lot of markdown post files and want to migrate them into catlog blog structure, run:
+If you already have a lot of markdown article files and want to migrate them into catlog blog structure, run:
 
 ```bash
 $ catlog migrate <path> 
@@ -59,7 +59,7 @@ $ catlog migrate <path>
 
 It will prompt lost meta information needed for every markdown files.
 
-When you finish writing post and want to preview it on local server, you should run:
+When you finish writing article and want to preview it on local server, you should run:
 
 ```bash
 $ catlog preview [-s] [-a] 
@@ -125,8 +125,8 @@ In your website root directory, change settings.json `plugins` field.  Following
 
 ```json
 {
-  "source": "./post",
-  "destination": "_post",
+  "source": ".contents",
+  "destination": "build",
   "permalink_style": "date",
   "base_url": "/",
   "about_url": "http://about.me/cattail",
@@ -179,3 +179,6 @@ In your website root directory, change settings.json `plugins` field.  Following
 * 完善came样式(完善设计, 样式, 时间等)
 * 相册
 * 支持其他类型文件(除了md, 包括html, add lab)的转换
+
+
+
