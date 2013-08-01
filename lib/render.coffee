@@ -1,4 +1,4 @@
-fs = require 'fs'
+fs = require 'fs-extra'
 path = require 'path'
 _ = require 'underscore'
 async = require 'async'
@@ -6,8 +6,8 @@ jade = require 'jade'
 ejs = require 'ejs'
 directory = require './directory'
 parser = require './parser'
-rss = require 'rss'
 exec = require('child_process').exec
+rss = require 'rss'
 render = {}
 
 render.render = (site, callback) ->
@@ -23,7 +23,7 @@ render.render = (site, callback) ->
     else
       # copy post assets
       src_dir = path.join path.dirname(post.src), 'assets'
-      exec "cp -r #{src_dir} #{dest_dir}"
+      fs.copy "#{src_dir}", "#{dest_dir}/assets"
       # render
       # markdown content interpolation
       post.content = ejs.render post.content, {post: post, site: site}
