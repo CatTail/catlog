@@ -42,7 +42,7 @@ import_settings = ->
     local_settings.plugin_path = path.join top, "plugins"
     return local_settings
 
-create_post = (src, callback) ->
+create_article = (src, callback) ->
   if (src)
     console.log "Original markdown file #{src}"
     content = fs.readFileSync src, 'utf8'
@@ -55,12 +55,12 @@ create_post = (src, callback) ->
     {
       type: 'input'
       name: 'name'
-      message: 'write your post name'
+      message: 'write your article name'
     }
     {
       type: 'list'
       name: 'category'
-      message: 'choose post category'
+      message: 'choose article category'
       choices: categories
     }
     {
@@ -108,7 +108,7 @@ create_post = (src, callback) ->
     fs.writeFileSync path.join(basename, 'meta.json'), meta, 'utf8'
     fs.writeFileSync path.join(basename, 'index.md'), content or '', 'utf8'
     console.log 'created a new article directory below contents folder.'.prompt
-    console.log "edit post in #{settings.source}/#{category}/#{title}/index.md".prompt
+    console.log "edit article in #{settings.source}/#{category}/#{title}/index.md".prompt
     callback and callback()
 
 cmd_init = ->
@@ -140,8 +140,8 @@ cmd_init = ->
       if answers.ifProcess
         init()
 
-cmd_post = ->
-  create_post '', ->
+cmd_publish = ->
+  create_article '', ->
     process.stdin.destroy()
 
 cmd_build = (args) ->
@@ -186,7 +186,7 @@ cmd_migrate = (p) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
   ), ((srcs) ->
     async.eachSeries srcs, ((src, callback) ->
-      create_post src, callback
+      create_article src, callback
     ), ->
       process.stdin.destroy()
   )
@@ -207,9 +207,9 @@ program
   .action(cmd_init)
 
 program
-  .command('post')
-  .description('create post')
-  .action(cmd_post)
+  .command('publish')
+  .description('publish new article')
+  .action(cmd_publish)
 
 program
   .command('preview')
@@ -234,6 +234,11 @@ program
   .command('help [cmd]')
   .description('display command description')
   .action(cmd_help)
+
+program
+  .command('*')
+  .description('unknown')
+  .action(program.help)
 
 program.parse process.argv
 
