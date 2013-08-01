@@ -7,7 +7,7 @@ html {
 	padding:0;
 }
 body {
-	font: 14px helvetica,arial,freesans,clean,sans-serif;
+	/*font: 14px helvetica,arial,freesans,clean,sans-serif;*/
 	line-height: 1.6;
 	text-align:left;
 	color: #333;
@@ -80,7 +80,7 @@ p {
 }
 
 pre, code {
-	font: 12px 'Bitstream Vera Sans Mono','Courier',monospace;
+	/*font: 12px 'Bitstream Vera Sans Mono','Courier',monospace;*/
 }
 .highlight pre, pre {
 	background-color:#f8f8f8;
