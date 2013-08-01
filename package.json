@@ -1,6 +1,6 @@
 {
   "name": "catlogjs",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "CatTail's auto markdown blog generator",
   "main": "index.coffee",
   "scripts": {},
@@ -27,7 +27,8 @@
     "optimist": "~0.6.0",
     "inquirer": "~0.2.3",
     "commander": "~2.0.0",
-    "colors": "~0.6.1"
+    "colors": "~0.6.1",
+    "temp": "~0.5.1"
   },
   "author": "zhongchiyu@gmail.com",
   "license": "MIT",
