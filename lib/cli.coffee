@@ -107,6 +107,8 @@ create_post = (src, callback) ->
     fs.mkdirSync basename
     fs.writeFileSync path.join(basename, 'meta.json'), meta, 'utf8'
     fs.writeFileSync path.join(basename, 'index.md'), content or '', 'utf8'
+    console.log 'created a new article directory below contents folder.'.prompt
+    console.log "edit post in #{settings.source}/#{category}/#{title}/index.md".prompt
     callback and callback()
 
 cmd_init = ->
@@ -117,14 +119,15 @@ cmd_init = ->
     dest = global_settings.destination
     fs.mkdirSync src
     fs.mkdirSync dest
+    console.log 'creates a skeleton site with a basic set of templates'.info
     console.log 'copying plugins'.info
     exec "cp -r #{root}/assets/plugins .", ->
       console.log 'copying themes'.info
       exec "cp -r #{root}/assets/themes .", ->
         console.log 'copying settings'.info
         exec "cp #{root}/assets/settings.json .", ->
-          console.log 'copying default posts'.info
-          exec "cp -r #{root}/assets/about #{src}"
+          console.log 'copying default blog content'.info
+          exec "cp -r #{root}/assets/examples #{src}"
   if not fs.readdirSync('.').length
     init()
   else

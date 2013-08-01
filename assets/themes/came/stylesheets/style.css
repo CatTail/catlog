@@ -73,3 +73,12 @@ nav li a {
 #content .meta {
   font-size: 11px;
 }
+pre {
+  padding: 1em 1.6em 1em 1.2em;
+  vertical-align: top;
+  background: #F8F8F8;
+  border: 1px solid #E8E8E8;
+  border-width: 1px 1px 1px 6px;
+  margin: -0.5em 0 1.1em;
+  overflow-x: auto;
+}
