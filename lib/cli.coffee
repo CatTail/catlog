@@ -167,6 +167,7 @@ cmd_preview = (args) ->
   temp.mkdir 'catlog', (err, dirPath) ->
     settings = import_settings()
     settings.destination = dirPath
+    settings.base_url = '/' # local server always use root
     console.log 'copying theme'.info
     exec "rm -rf #{settings.destination}/theme", ->
       exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
