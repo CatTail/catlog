@@ -8,6 +8,7 @@ html
         | #{post.name}
       else
         | #{site.site_title} by #{site.author}
+    link(rel="stylesheet", href="#{site.base_url}theme/stylesheets/prettify.css")
     link(rel="stylesheet", href="#{site.base_url}theme/stylesheets/gfm_markdown.css")
     link(rel="stylesheet", href="#{site.base_url}theme/stylesheets/style.css")
     // if lt IE 9
@@ -35,3 +36,7 @@ html
     // if !IE
       script.
         fixScale(document);
+    script(src="#{site.base_url}theme/javascript/prettify.js")
+    //-script(src="#{site.base_url}theme/javascript/lang-basic.js")
+    script.
+      prettyPrint()

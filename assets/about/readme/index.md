@@ -5,6 +5,9 @@
 Catlog is a static site generator. It allow users to use markdown syntax to write post and publish it with html format. Catlog has a inner test server to allow you see post result after write it. It also support for self theme and plugin definition.
 
 Live demo [blog.cattail.me](http://blog.cattail.me)
+```js
+var a = 0;
+```
 
 ## Quick-start
 First install catlog with npm:

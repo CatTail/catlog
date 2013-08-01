@@ -160,7 +160,7 @@ cmd_build = (args) ->
           server.run {path: settings.destination, port: port}
 
 cmd_preview = (args) ->
-  dest = path.join '/tmp', parseInt(Math.random()*1000, 10)+''
+  dest = path.join '/tmp', parseInt(Math.random()*10000, 10)+''
   fs.mkdirSync dest
   settings = import_settings()
   settings.destination = dest
