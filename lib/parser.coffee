@@ -13,7 +13,7 @@ marked.setOptions {
   pedantic: false
   sanitize: true
   smartLists: true
-  langPrefix: 'prettyprint lang-'
+  langPrefix: ''
 }
 
 parser.permalink_styles = {
