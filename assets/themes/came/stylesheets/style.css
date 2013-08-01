@@ -6,7 +6,8 @@ html {
   background: #FFF;
   color: #444;
   padding: 0 15px;
-  font-family: arial,sans-serif;
+  /*font-family: arial,sans-serif;*/
+  font: 500 14px/1.8 Lucida,Verdana,Hiragino Sans GB,WenQuanYi Micro Hei,sans-serif;
 }
 .aux {
   margin: auto;
