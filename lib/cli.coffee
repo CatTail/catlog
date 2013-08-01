@@ -117,10 +117,14 @@ cmd_init = ->
     dest = global_settings.destination
     fs.mkdirSync src
     fs.mkdirSync dest
-    exec "cp -r #{root}/assets/plugins ."
-    exec "cp -r #{root}/assets/themes ."
-    exec "cp #{root}/assets/settings.json ."
-    exec "cp -r #{root}/assets/about #{src}"
+    console.log 'copying plugins'.info
+    exec "cp -r #{root}/assets/plugins .", ->
+      console.log 'copying themes'.info
+      exec "cp -r #{root}/assets/themes .", ->
+        console.log 'copying settings'.info
+        exec "cp #{root}/assets/settings.json .", ->
+          console.log 'copying default posts'.info
+          exec "cp -r #{root}/assets/about #{src}"
   if not fs.readdirSync('.').length
     init()
   else
@@ -159,6 +163,7 @@ cmd_preview = (args) ->
   dest = path.join '/tmp', parseInt(Math.random()*1000, 10)+''
   fs.mkdirSync dest
   settings = import_settings()
+  settings.destination = dest
   console.log 'copying theme'.info
   exec "rm -rf #{settings.destination}/theme", ->
     exec "cp -r #{settings.theme_path} #{settings.destination}/theme", ->
