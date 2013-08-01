@@ -229,3 +229,6 @@ program
   .action(cmd_help)
 
 program.parse process.argv
+
+if program.args.length is 0
+  program.help()
