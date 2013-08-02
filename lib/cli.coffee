@@ -117,20 +117,36 @@ cmd_init = ->
     root = path.resolve __dirname, '..'
     src = global_settings.source
     dest = global_settings.destination
-    fs.mkdirSync src
-    fs.mkdirSync dest
-    console.log 'creates a skeleton site with a basic set of templates'.info
-    console.log 'copying plugins'.info
-    fs.copy "#{root}/assets/plugins", 'plugins', ->
-      console.log 'copying themes'.info
-      fs.copy "#{root}/assets/themes", 'themes', ->
-        console.log 'copying settings'.info
-        fs.copy "#{root}/assets/settings.json", 'settings.json', ->
-          console.log 'copying default blog content'.info
-          fs.copy "#{root}/assets/examples", "#{src}/examples", ->
+
+    console.log 'creates site skeleton structure'.info
+    if not fs.existsSync(src)
+      fs.mkdirSync(src)
+      console.log 'copying default blog content'.info
+      fs.copy "#{root}/assets/examples", "#{src}/examples"
+    else
+      console.log "#{src} exist, leave without touch".warn
+
+    if not fs.existsSync(dest)
+      fs.mkdirSync(dest)
+    else
+      console.log "#{dest} exist, leave without touch".warn
+
+    assets = [
+      ["#{root}/assets/plugins", 'plugins']
+      ["#{root}/assets/themes", 'themes']
+      ["#{root}/assets/settings.json", 'settings.json']
+    ]
+    for asset in assets
+      if not fs.existsSync asset[1]
+        console.log "copy #{asset[1]}".info
+        fs.copy asset[0], asset[1]
+      else
+        console.log "#{asset[1]} exist, leave without touch".warn
+
   if not fs.readdirSync('.').length
     init()
   else
+    # directory not empty
     inquirer.prompt {
       type: 'confirm'
       name: 'ifProcess'

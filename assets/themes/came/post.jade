@@ -5,3 +5,7 @@ block content
     h1 #{post.name}
     .meta #{post.date} created by #{post.author}
     section !{post.content}
+
+block footer
+  !{site.plugins.disqus}
+  !{site.plugins.qudian}
