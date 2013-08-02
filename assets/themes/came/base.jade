@@ -31,8 +31,8 @@ html
       block content
     footer
       .aux
-        each plugin in site.plugins
-          !{plugin}
+        !{site.plugins.ga}
+        block footer
     // if !IE
       script.
         fixScale(document);
