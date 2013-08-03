@@ -47,7 +47,7 @@ input new permalink title: 固定链接，为了美观，请尽量使用英文
 input author name: 文章作者名
 ```
 		
-when done, you will have a subdirectory in contents folder: contents/category_name/permalink_title.There will be a index.md and a meta.json file. The index.md is where you write your article, and the meta.json file holds some info of your article.
+when done, you will have a subdirectory in contents folder: contents/category\_name/permalink\_title.There will be a index.md and a meta.json file. The index.md is where you write your article, and the meta.json file holds some info of your article.
 	
 The catlog blog structure contain the meta info of articles, do not change the directory structure without knowning what it means. `publish` command will handle this properly for you.
 
@@ -85,14 +85,14 @@ This generates your site and places it in the build/ directory - all ready to be
 #### site
 * source
 * destination
-* theme_path
-* plugin_path
-* permalink_style
-* base_url
+* theme\_path
+* plugin\_path
+* permalink\_style
+* base\_url
 * port
 * author
-* site_title
-* site_url
+* site\_title
+* site\_url
 * destination
 * theme
 * plugins
@@ -153,6 +153,7 @@ In your website root directory, change settings.json `plugins` field.  Following
 ```
 
 ## TODO
+* 区分meta-parser和detail-parser
 * 编写测试
 * 增加示例
 * 增加about等特殊页面的支持
@@ -161,7 +162,7 @@ In your website root directory, change settings.json `plugins` field.  Following
 * 支持其他类型文件(除了md, 包括html, add lab)的转换
 
 ## Contributors
-* [CatTail](http://github.com/CatTail)
+* [CatTail](http://cattail.me)
 * [Victaojun](http://github.com/wutaojun)
 * [Xiaoxiao](http://iamxiaoxiao.me)
 

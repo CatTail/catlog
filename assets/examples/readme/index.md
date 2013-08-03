@@ -1,5 +1,4 @@
 # Catlog
-[![Build Status](https://travis-ci.org/CatTail/catlog.png?branch=develop)](https://travis-ci.org/CatTail/catlog)
 
 ## Introduction
 Catlog is a static site generator. It allow users to use markdown syntax to write blog article and publish it with html format. Catlog has a inner test server to allow you see your blog after write it. It also support for self theme and plugin definition.
@@ -151,34 +150,3 @@ In your website root directory, change settings.json `plugins` field.  Following
   }
 }
 ```
-
-## ChangeLog
-* 增加静态html文件的直接发布
-* 将项目作为binary服务启动, 测试非同级目录下的生成情况
-* 将meta信息和markdown分离
-* 将分类信息集中在目录结构中, 并且统一将makrdown文件命名为index.md
-* 通过创建全局scope而不是通过scope继承的方式解决单个post和post分类之间的冲突耦合
-* 寻求分类目录下index文件位置确定的解决方案.暂时为category固定路径
-* 增加已存在markdown文件的迁移
-* RSS
-* 分离post title和name
-* 增加自定义插件支持(disqus, qudian etc)
-* 确定特定类型页面的渲染变量
-* 针对不同页面, 使用不同的插件
-* 增加markdown文件中变量的渲染功能
-* 允许在项目目录(即存在settings.json的任意子目录)运行catlog命令
-* 增加图片等其他资源文件支持(注意, 不合理的permalink_style定义可能导致资源覆盖)
-* 增加文档
-* 为async增加conditional函数(已comment到issue)
-* 思考如何消除大量回调([solution for javascript callback chain](http://blog.cattail.me/Tech/2013/06/18/solution-for-javascript-async-callback-chain/index.html))
-
-## TODO
-* 编写测试
-* 增加示例
-* 增加about等特殊页面的支持
-* 完善came样式(完善设计, 样式, 时间等)
-* 相册
-* 支持其他类型文件(除了md, 包括html, add lab)的转换
-
-
-
