@@ -4,11 +4,20 @@ _ = require 'underscore'
 async = require 'async'
 jade = require 'jade'
 ejs = require 'ejs'
+marked = require 'marked'
 directory = require './directory'
-parser = require './parser'
-exec = require('child_process').exec
 rss = require 'rss'
 render = {}
+
+marked.setOptions {
+  gfm: true
+  tables: true
+  breaks: false
+  pedantic: false
+  sanitize: true
+  smartLists: true
+  langPrefix: ''
+}
 
 render.render = (site, callback) ->
   fn_post = @compile_template 'post', site.theme_path
@@ -16,25 +25,16 @@ render.render = (site, callback) ->
   fn_list = @compile_template 'list', site.theme_path
   site.plugins = @render_plugin site.plugin_path, site.plugins
   async.forEach site.posts, ((post, callback) =>
-    dest = path.join(site.destination, post.permalink)
-    dest_dir = path.dirname dest
-    if post.type is 'html' # copy raw type assets
-      @render_raw path.dirname(post.src), dest_dir, callback
-    else
-      # copy post assets
+    @parse_markdown fs.readFileSync(post.src, 'utf8'), (content) =>
+      post.content = content
+      dest = path.join(site.destination, post.permalink)
+      dest_dir = path.dirname dest
       src_dir = path.join path.dirname(post.src), 'assets'
       fs.copy "#{src_dir}", "#{dest_dir}/assets"
       # render
       # markdown content interpolation
       post.content = ejs.render post.content, {post: post, site: site}
       @render_file fn_post, {post: post, site: site}, dest, callback
-      # auto change detect
-      if site.auto
-        fs.watchFile post.src, {persistent: true, interval: 1000}, =>
-          console.log 'update'
-          parser.parse_post post.src, site.permalink_style, (post) =>
-            post.content = ejs.render post.content, {post: post, site: site}
-            @render_file fn_post, {site: site, post: post}, dest
   ), =>
     dest = path.join site.destination, 'index.html'
     @render_file fn_index, {site: site, posts: site.posts}, dest
@@ -45,25 +45,17 @@ render.render = (site, callback) ->
     @render_feed site
     callback and callback()
 
+render.parse_markdown = (content, callback) ->
+  content = marked.parser marked.lexer content
+  callback and callback content
+
 render.render_file = (fn, context, dest, callback) ->
   html = fn context
   # FIXME see https://github.com/caolan/async/pull/272
   if not fs.existsSync path.dirname dest
-    directory.mkdir_parent path.dirname(dest), null, ->
-      fs.writeFileSync dest, html, 'utf8'
-      callback and callback()
-  else
-    fs.writeFileSync dest, html, 'utf8'
-    callback and callback()
-
-render.render_raw = (src, dest, callback) ->
-  if not fs.existsSync dest
-    directory.mkdir_parent dest, null, ->
-      exec "cp -r #{src}/* #{dest}", ->
-        callback and callback()
-  else
-    exec "cp -r #{src}/* #{dest}", ->
-      callback and callback()
+    directory.mkdir_parent path.dirname(dest), null
+  fs.writeFileSync dest, html, 'utf8'
+  callback and callback()
 
 render.render_feed = (site, callback) ->
   feed = new rss {

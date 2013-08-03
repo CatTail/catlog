@@ -10,7 +10,7 @@ temp = require 'temp'
 server = require '../lib/server'
 directory = require '../lib/directory'
 parser = require '../lib/parser'
-render = require '../lib/render'
+render = require '../lib/render.coffee'
 
 colors.setTheme({
   silly: 'rainbow'
@@ -26,23 +26,23 @@ colors.setTheme({
 })
 
 import_settings = ->
-  directory.root 'settings.json', (top) ->
+  top = directory.root 'settings.json'
+  if top is null
     # check if directory valid
-    if top is null
-      console.log 'using `catlog init` to initialize project directory'.error
-      process.exit()
+    console.log 'using `catlog init` to initialize project directory'.error
+    process.exit()
 
-    global_settings = require '../assets/settings'
-    local_settings = require path.join(top, 'settings.json')
-    local_settings = _.clone _.defaults local_settings, global_settings
-    # reset as relative path
-    local_settings.source = path.join top, local_settings.source
-    local_settings.destination = path.join top, local_settings.destination
-    local_settings.theme_path = path.join top, "themes/#{local_settings.theme}"
-    local_settings.plugin_path = path.join top, "plugins"
-    return local_settings
+  global_settings = require '../assets/settings'
+  local_settings = require path.join(top, 'settings.json')
+  local_settings = _.clone _.defaults local_settings, global_settings
+  # reset as relative path
+  local_settings.source = path.join top, local_settings.source
+  local_settings.destination = path.join top, local_settings.destination
+  local_settings.theme_path = path.join top, "themes/#{local_settings.theme}"
+  local_settings.plugin_path = path.join top, "plugins"
+  return local_settings
 
-create_article = (src, callback) ->
+create_post = (src, callback) ->
   if (src)
     console.log "Original markdown file #{src}"
     content = fs.readFileSync src, 'utf8'
@@ -157,14 +157,14 @@ cmd_init = ->
         init()
 
 cmd_publish = ->
-  create_article '', ->
+  create_post '', ->
     process.stdin.destroy()
 
 cmd_build = (args) ->
   settings = import_settings()
   console.log 'copying theme'.info
   fs.copy "#{settings.theme_path}", "#{settings.destination}/theme", ->
-    console.log 'pars markdown'.info
+    console.log 'parse markdown'.info
     settings.auto = args.auto
     parser.parse settings, (env) ->
       console.log 'render html'.info
@@ -186,7 +186,7 @@ cmd_preview = (args) ->
     console.log 'copy theme'.info
     fs.copy "#{settings.theme_path}", "#{settings.destination}/theme", ->
       settings.auto = args.auto
-      console.log 'pars markdown'.info
+      console.log 'parse markdown'.info
       parser.parse settings, (env) ->
         console.log 'render markdown'.info
         render.render env
@@ -198,14 +198,13 @@ cmd_preview = (args) ->
         server.run {path: settings.destination, port: port}
 
 cmd_migrate = (p) ->
-  directory.list p, ((src) ->
+  srcs = directory.list p, (src) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
-  ), ((srcs) ->
-    async.eachSeries srcs, ((src, callback) ->
-      create_article src, callback
-    ), ->
-      process.stdin.destroy()
-  )
+
+  async.eachSeries srcs, ((src, callback) ->
+    create_post src, callback
+  ), ->
+    process.stdin.destroy()
 
 cmd_help = (cmd) ->
   if cmd
