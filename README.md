@@ -153,7 +153,7 @@ In your website root directory, change settings.json `plugins` field.  Following
 ```
 
 ## TODO
-* 区分meta-parser和detail-parser
+* 区分meta-parser和detail-parser. Global settings.json theme will be used in index and list, while local post meta.json theme field will be used in that particular post.
 * 编写测试
 * 增加示例
 * 增加about等特殊页面的支持
