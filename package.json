@@ -1,6 +1,6 @@
 {
   "name": "catlogjs",
-  "version": "0.0.18",
+  "version": "0.0.20",
   "description": "CatTail's auto markdown blog generator",
   "main": "index.coffee",
   "scripts": {},
