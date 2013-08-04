@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.1 [2013-08-04]
+
+* 重构directory.coffee, 使用sync代码风格
+* 区分meta parser和content parser. 增加解析[html5slides](https://code.google.com/p/html5slides/)的slide.coffee. 通过配置meta.json可以使用不同的content parser
+
 ## v0.0.20 [2013-08-03]
 
 * 修复base\_url对首页和列表页面不起作用
