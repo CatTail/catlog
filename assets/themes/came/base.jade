@@ -4,13 +4,13 @@ html
     meta(charset="utf-8")
     meta(http-equiv="X-UA-Compatible", content="chrome=1")
     title
-      if post
-        | #{post.name}
+      if name
+        | #{name}
       else
-        | #{site.site_title} by #{site.author}
-    link(rel="stylesheet", href="#{site.base_url}theme/stylesheets/highlight/default.css")
-    link(rel="stylesheet", href="#{site.base_url}theme/stylesheets/gfm_markdown.css")
-    link(rel="stylesheet", href="#{site.base_url}theme/stylesheets/style.css")
+        | #{site_title} by #{author}
+    link(rel="stylesheet", href="#{base_url}themes/#{theme}/stylesheets/highlight/default.css")
+    link(rel="stylesheet", href="#{base_url}themes/#{theme}/stylesheets/gfm_markdown.css")
+    link(rel="stylesheet", href="#{base_url}themes/#{theme}/stylesheets/style.css")
     // if lt IE 9
       script(src="//html5shiv.googlecode.com/svn/trunk/html5.js").
     meta(name="viewport", 
@@ -19,23 +19,23 @@ html
   body
     header#header
       div.aux
-        h1: a(href="#{site.base_url}") #{site.site_title}
+        h1: a(href="#{base_url}") #{site_title}
     nav#nav
       ul
-        li: a(href="#{site.base_url}") Home
-        each category in site.categories
-          li: a(href="#{site.base_url}#{category}") #{category}
-        li: a(href="#{site.base_url}feed.xml") Feed
-        li: a(href="#{site.about_url}") About
+        li: a(href="#{base_url}") Home
+        each category in categories
+          li: a(href="#{base_url}#{category}") #{category}
+        li: a(href="#{base_url}feed.xml") Feed
+        li: a(href="#{about_url}") About
     #content
       block content
     footer
       .aux
-        !{site.plugins.ga}
+        !{plugins.ga}
         block footer
     // if !IE
       script.
         fixScale(document);
-    script(src="#{site.base_url}theme/javascript/highlight.pack.js")
+    script(src="#{base_url}themes/#{theme}/javascript/highlight.pack.js")
     script.
       hljs.initHighlightingOnLoad();

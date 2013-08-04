@@ -38,7 +38,7 @@ import_settings = ->
   # reset as relative path
   local_settings.source = path.join top, local_settings.source
   local_settings.destination = path.join top, local_settings.destination
-  local_settings.theme_path = path.join top, "themes/#{local_settings.theme}"
+  local_settings.theme_path = path.join top, "themes"
   local_settings.plugin_path = path.join top, "plugins"
   return local_settings
 
@@ -163,7 +163,7 @@ cmd_publish = ->
 cmd_build = (args) ->
   settings = import_settings()
   console.log 'copying theme'.info
-  fs.copy "#{settings.theme_path}", "#{settings.destination}/theme", ->
+  fs.copy "#{settings.theme_path}", "#{settings.destination}/themes", ->
     console.log 'parse markdown'.info
     settings.auto = args.auto
     parser.parse settings, (env) ->
@@ -184,7 +184,7 @@ cmd_preview = (args) ->
     settings.destination = dirPath
     settings.base_url = '/' # local server always use root
     console.log 'copy theme'.info
-    fs.copy "#{settings.theme_path}", "#{settings.destination}/theme", ->
+    fs.copy "#{settings.theme_path}", "#{settings.destination}/themes", ->
       settings.auto = args.auto
       console.log 'parse markdown'.info
       parser.parse settings, (env) ->
