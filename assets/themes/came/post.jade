@@ -2,10 +2,10 @@ extends base
 
 block content
   .aux
-    h1 #{post.name}
-    .meta #{post.date} created by #{post.author}
-    section !{post.content}
+    h1 #{name}
+    .meta #{date} created by #{author}
+    section !{content}
 
 block footer
-  !{site.plugins.disqus}
-  !{site.plugins.qudian}
+  !{plugins.disqus}
+  !{plugins.qudian}

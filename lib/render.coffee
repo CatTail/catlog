@@ -4,58 +4,45 @@ _ = require 'underscore'
 async = require 'async'
 jade = require 'jade'
 ejs = require 'ejs'
-marked = require 'marked'
 directory = require './directory'
 rss = require 'rss'
 render = {}
 
-marked.setOptions {
-  gfm: true
-  tables: true
-  breaks: false
-  pedantic: false
-  sanitize: true
-  smartLists: true
-  langPrefix: ''
-}
-
 render.render = (site, callback) ->
-  fn_post = @compile_template 'post', site.theme_path
-  fn_index = @compile_template 'index', site.theme_path
-  fn_list = @compile_template 'list', site.theme_path
   site.plugins = @render_plugin site.plugin_path, site.plugins
-  async.forEach site.posts, ((post, callback) =>
-    @parse_markdown fs.readFileSync(post.src, 'utf8'), (content) =>
-      post.content = content
-      dest = path.join(site.destination, post.permalink)
-      dest_dir = path.dirname dest
-      src_dir = path.join path.dirname(post.src), 'assets'
-      fs.copy "#{src_dir}", "#{dest_dir}/assets"
-      # render
-      # markdown content interpolation
-      post.content = ejs.render post.content, {post: post, site: site}
-      @render_file fn_post, {post: post, site: site}, dest, callback
-  ), =>
-    dest = path.join site.destination, 'index.html'
-    @render_file fn_index, {site: site, posts: site.posts}, dest
-    for category in site.categories
-      posts = (post for post in site.posts when post.category is category)
-      dest = path.join site.destination, category, 'index.html'
-      @render_file fn_list, {site: site, posts: posts}, dest
-    @render_feed site
-    callback and callback()
+  for post in site.posts
+    # markdown interpolation
+    post.content = ejs.render post.content, post
+    console.log post
+    # render
+    src = path.join post.theme_path, post.theme, 'post.jade'
+    dest = path.join post.destination, post.permalink
+    @render_file src, dest, post
+    # assets
+    assets = path.join path.dirname(post.src), 'assets'
+    fs.copy "#{assets}", "#{path.dirname dest}/assets"
 
-render.parse_markdown = (content, callback) ->
-  content = marked.parser marked.lexer content
-  callback and callback content
+  src = path.join site.theme_path, site.theme, 'index.jade'
+  dest = path.join site.destination, 'index.html'
+  @render_file src, dest, site
+  for category in site.categories
+    src = path.join site.theme_path, site.theme, 'list.jade'
+    dest = path.join site.destination, category, 'index.html'
+    context = _.defaults {}, site
+    context.posts = (post for post in site.posts when post.category is category)
+    @render_file src, dest, context
+  @render_feed site
+  callback and callback()
 
-render.render_file = (fn, context, dest, callback) ->
-  html = fn context
-  # FIXME see https://github.com/caolan/async/pull/272
+render.compile_template = (template_path) ->
+  template = fs.readFileSync template_path, 'utf8'
+  jade.compile template, {filename: template_path}
+
+render.render_file = (src, dest, context) ->
+  html = @compile_template(src)(context)
   if not fs.existsSync path.dirname dest
     directory.mkdir_parent path.dirname(dest), null
   fs.writeFileSync dest, html, 'utf8'
-  callback and callback()
 
 render.render_feed = (site, callback) ->
   feed = new rss {
@@ -75,11 +62,6 @@ render.render_feed = (site, callback) ->
     }
   fs.writeFileSync path.join(site.destination, 'feed.xml'), feed.xml(), 'utf8'
   callback and callback()
-
-render.compile_template = (filename, theme_path) ->
-  filename = path.join theme_path, "#{filename}.jade"
-  template = fs.readFileSync filename, 'utf8'
-  jade.compile template, {filename: filename}
 
 render.render_plugin = (plugin_path, plugins) ->
   for plugin, config of plugins
