@@ -2,8 +2,10 @@ fs = require 'fs-extra'
 path = require 'path'
 _ = require 'underscore'
 async = require 'async'
-jade = require 'jade'
-ejs = require 'ejs'
+engine = {
+  ejs: require 'ejs'
+  jade: require 'jade'
+}
 directory = require './directory'
 rss = require 'rss'
 render = {}
@@ -12,21 +14,21 @@ render.render = (site, callback) ->
   site.plugins = @render_plugin site.plugin_path, site.plugins
   for post in site.posts
     # markdown interpolation
-    post.content = ejs.render post.content, post
-    console.log post
+    if post.content
+      post.content = engine.ejs.render post.content, post
     # render
-    src = path.join post.theme_path, post.theme, 'post.jade'
+    src = path.join post.theme_path, post.theme, 'post'
     dest = path.join post.destination, post.permalink
     @render_file src, dest, post
     # assets
     assets = path.join path.dirname(post.src), 'assets'
     fs.copy "#{assets}", "#{path.dirname dest}/assets"
 
-  src = path.join site.theme_path, site.theme, 'index.jade'
+  src = path.join site.theme_path, site.theme, 'index'
   dest = path.join site.destination, 'index.html'
   @render_file src, dest, site
   for category in site.categories
-    src = path.join site.theme_path, site.theme, 'list.jade'
+    src = path.join site.theme_path, site.theme, 'list'
     dest = path.join site.destination, category, 'index.html'
     context = _.defaults {}, site
     context.posts = (post for post in site.posts when post.category is category)
@@ -34,12 +36,15 @@ render.render = (site, callback) ->
   @render_feed site
   callback and callback()
 
-render.compile_template = (template_path) ->
-  template = fs.readFileSync template_path, 'utf8'
-  jade.compile template, {filename: template_path}
-
 render.render_file = (src, dest, context) ->
-  html = @compile_template(src)(context)
+  dir = path.dirname src
+  type = path.basename src
+  for file in fs.readdirSync dir
+    if file.indexOf(type) is 0
+      format = path.extname(file).slice(1)
+      filename = "#{src}.#{format}"
+      raw = fs.readFileSync filename, 'utf8'
+      html = engine[format].render raw, _.defaults({filename: filename}, context)
   if not fs.existsSync path.dirname dest
     directory.mkdir_parent path.dirname(dest), null
   fs.writeFileSync dest, html, 'utf8'
@@ -66,7 +71,7 @@ render.render_feed = (site, callback) ->
 render.render_plugin = (plugin_path, plugins) ->
   for plugin, config of plugins
     raw = fs.readFileSync path.join(plugin_path, "#{plugin}.html"), 'utf8'
-    plugins[plugin] = ejs.render raw, config
+    plugins[plugin] = engine.ejs.render raw, config
   return plugins
 
 module.exports = render

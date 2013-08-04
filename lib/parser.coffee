@@ -6,18 +6,6 @@ async = require 'async'
 directory = require './directory'
 parser = {}
 
-marked = require 'marked'
-
-marked.setOptions {
-  gfm: true
-  tables: true
-  breaks: false
-  pedantic: false
-  sanitize: true
-  smartLists: true
-  langPrefix: ''
-}
-
 parser.permalink_styles = {
   date: ':category/:year/:month/:day/:title/:index.html'
   none: ':category/:title/:index.html'
@@ -52,14 +40,12 @@ parser.parse = (site, callback) ->
     new Date("#{b.date} #{b.time}") - new Date("#{a.date} #{a.time}")
   # parse content
   async.each site.posts, ((post, callback) =>
-    @parse_markdown fs.readFileSync(post.src, 'utf8'), (content) =>
-      post.content = content
+    handler = require "./parser/#{post.type or 'default'}"
+    handler.parse fs.readFileSync(post.src, 'utf8'), (context) =>
+      for key, val of context
+        post[key] = val
       callback()
   ), ->
     callback site
-
-parser.parse_markdown = (content, callback) ->
-  content = marked.parser marked.lexer content
-  callback and callback content
 
 module.exports = parser
