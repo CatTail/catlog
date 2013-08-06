@@ -1,7 +1,7 @@
 {
   "name": "catlogjs",
-  "version": "0.1.1",
-  "description": "CatTail's auto markdown blog generator",
+  "version": "0.1.2",
+  "description": "Static site generator, translate human readable text format(such as markdown) into html, with a lot of other functions",
   "main": "index.coffee",
   "scripts": {},
   "repository": {
@@ -10,8 +10,7 @@
   },
   "keywords": [
     "blog",
-    "markdown",
-    "cattail"
+    "markdown"
   ],
   "dependencies": {
     "marked": "~0.2.8",
