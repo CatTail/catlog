@@ -153,6 +153,7 @@ In your website root directory, change settings.json `plugins` field.  Following
 ```
 
 ## TODO
+* 修改migrate呈现形式
 * 增加about等特殊页面的支持
 * 编写测试
 * 增加示例
