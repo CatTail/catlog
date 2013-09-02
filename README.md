@@ -164,4 +164,4 @@ In your website root directory, change settings.json `plugins` field.  Following
 * [Victaojun](http://github.com/wutaojun)
 * [Xiaoxiao](http://iamxiaoxiao.me)
 
-Developed when I was working at &copy;Qudian corporation.
+Developed when working at ©Qudian Tech Inc.
