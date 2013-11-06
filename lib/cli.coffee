@@ -25,11 +25,12 @@ colors.setTheme({
   error: 'red'
 })
 
-import_settings = ->
-  top = directory.root 'settings.json'
+import_settings = (to='.') ->
+  to = path.resolve to
+  top = directory.root to, "settings.json"
   if top is null
     # check if directory valid
-    console.log 'using `catlog init` to initialize project directory'.error
+    console.log 'use `catlog init [to]` to initialize project directory'.error
     process.exit()
 
   global_settings = require '../assets/settings'
@@ -42,11 +43,11 @@ import_settings = ->
   local_settings.plugin_path = path.join top, "plugins"
   return local_settings
 
-create_post = (src, callback) ->
+create_post = (src, to, callback) ->
   if (src)
     console.log "Original markdown file #{src}"
     content = fs.readFileSync src, 'utf8'
-  settings = import_settings()
+  settings = import_settings to
 
   categories = fs.readdirSync settings.source
   newCategory = 'Add new category'
@@ -145,25 +146,29 @@ cmd_init = (to='.', options) ->
       else
         console.log "#{asset[1]} exist, leave without touch".warn
 
-  if not fs.readdirSync(to).length or options.force
-    init()
-  else
-    # directory not empty
-    inquirer.prompt {
-      type: 'confirm'
-      name: 'ifProcess'
-      message: 'Current directory not empty, do you really want to process?'
-      default: false
-    }, (answers) ->
-      if answers.ifProcess
-        init()
+  try
+    if not fs.readdirSync(to).length or options.force
+      init()
+    else
+      # directory not empty
+      inquirer.prompt {
+        type: 'confirm'
+        name: 'ifProcess'
+        message: 'Current directory not empty, do you really want to process?'
+        default: false
+      }, (answers) ->
+        if answers.ifProcess
+          init()
+  catch err
+    console.log "Directory not exit".error
 
-cmd_publish = (args) ->
-  create_post '', ->
+
+cmd_publish = (to) ->
+  create_post '', to, ->
     process.stdin.destroy()
 
-cmd_build = (args) ->
-  settings = import_settings()
+cmd_build = (to='.', args) ->
+  settings = import_settings to
   console.log 'copying theme'.info
   fs.copy "#{settings.theme_path}", "#{settings.destination}/themes", ->
     console.log 'parse markdown'.info
@@ -179,10 +184,10 @@ cmd_build = (args) ->
           port = args.server
         server.run {path: settings.destination, port: port}
 
-cmd_preview = (args) ->
+cmd_preview = (to='.', args) ->
   temp.mkdir 'catlog', (err, dirPath) ->
     console.log "create temp directory #{dirPath}".info
-    settings = import_settings()
+    settings = import_settings to
     settings.destination = dirPath
     settings.base_url = '/' # local server always use root
     console.log 'copy theme'.info
@@ -199,12 +204,12 @@ cmd_preview = (args) ->
           port = settings.port
         server.run {path: settings.destination, port: port}
 
-cmd_migrate = (p) ->
-  srcs = directory.list p, (src) ->
+cmd_migrate = (from, to) ->
+  srcs = directory.list from, (src) ->
     fs.statSync(src).isFile() and path.extname(src) is '.md'
 
   async.eachSeries srcs, ((src, callback) ->
-    create_post src, callback
+    create_post src, to, callback
   ), ->
     process.stdin.destroy()
 

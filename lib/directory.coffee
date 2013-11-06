@@ -33,8 +33,8 @@ directory.list = (dir, filter) ->
       srcs.push src
   return srcs
 
-directory.root = (identifier) ->
-  cur = process.cwd()
+directory.root = (cwd=process.cwd(), identifier) ->
+  cur = cwd
   while cur isnt '/' and not fs.existsSync path.join(cur, identifier)
     cur = path.dirname cur
   return if fs.existsSync path.join(cur, identifier) then cur else null
