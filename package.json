@@ -1,9 +1,11 @@
 {
   "name": "catlogjs",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Static site generator, translate human readable text format(such as markdown) into html, with a lot of other functions",
   "main": "index.coffee",
-  "scripts": {},
+  "scripts": {
+    "preinstall": "bin/preinstall"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/CatTail/catlog.git"
@@ -40,5 +42,9 @@
   "directories": {
     "lib": "./lib",
     "bin": "./bin"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-bump": "0.0.11"
   }
 }
