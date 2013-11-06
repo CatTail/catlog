@@ -1,5 +1,5 @@
 # Catlog
-[![Build Status](https://travis-ci.org/catlog/catlog.png?branch=develop)](https://travis-ci.org/catlog/catlog)
+[![Build Status](https://travis-ci.org/catlog/catlog.png?branch=master)](https://travis-ci.org/catlog/catlog)
 
 ## Introduction
 Catlog is a static site generator. It allow users to use markdown syntax to write blog article and publish it with html format. Catlog has a inner test server to allow you see your blog after write it. It also support for self theme and plugin definition.
