@@ -111,18 +111,20 @@ create_post = (src, callback) ->
     console.log "edit article in #{settings.source}/#{category}/#{title}/index.md".prompt
     callback and callback()
 
-cmd_init = ->
+cmd_init = (to='.', options) ->
   init = ->
     global_settings = require '../assets/settings'
-    root = path.resolve __dirname, '..'
-    src = global_settings.source
-    dest = global_settings.destination
+    assets = path.resolve __dirname, '../assets'
+    to = path.resolve to
+    src = path.join to, global_settings.source
+    dest = path.join to, global_settings.destination
 
     console.log 'creates site skeleton structure'.info
+
     if not fs.existsSync(src)
       fs.mkdirSync(src)
       console.log 'copying default blog content'.info
-      fs.copy "#{root}/assets/examples", "#{src}/examples"
+      fs.copy "#{assets}/assets/examples", "#{src}/examples"
     else
       console.log "#{src} exist, leave without touch".warn
 
@@ -132,9 +134,9 @@ cmd_init = ->
       console.log "#{dest} exist, leave without touch".warn
 
     assets = [
-      ["#{root}/assets/plugins", 'plugins']
-      ["#{root}/assets/themes", 'themes']
-      ["#{root}/assets/settings.json", 'settings.json']
+      ["#{assets}/plugins", "#{to}/plugins"]
+      ["#{assets}/themes", "#{to}/themes"]
+      ["#{assets}/settings.json", "#{to}/settings.json"]
     ]
     for asset in assets
       if not fs.existsSync asset[1]
@@ -143,7 +145,7 @@ cmd_init = ->
       else
         console.log "#{asset[1]} exist, leave without touch".warn
 
-  if not fs.readdirSync('.').length
+  if not fs.readdirSync(to).length or options.force
     init()
   else
     # directory not empty
@@ -156,7 +158,7 @@ cmd_init = ->
       if answers.ifProcess
         init()
 
-cmd_publish = ->
+cmd_publish = (args) ->
   create_post '', ->
     process.stdin.destroy()
 
@@ -217,31 +219,32 @@ program
   .version(require('../package.json').version)
 
 program
-  .command('init')
+  .command('init [to]')
   .description('initialize project, create new directory before initialize')
+  .option('-f --force', 'force initialize on directory not empty')
   .action(cmd_init)
 
 program
-  .command('publish')
+  .command('publish [to]')
   .description('publish new article')
   .action(cmd_publish)
 
 program
-  .command('preview')
+  .command('preview [to]')
   .description('preview generated html files')
   .option('-s --server [port]', 'start local server')
   .option('-a --auto', 'watch for file change and auto update')
   .action(cmd_preview)
 
 program
-  .command('build')
+  .command('build [to]')
   .description('build html files')
   .option('-s --server [port]', 'start local server')
   .option('-a --auto', 'watch for file change and auto update')
   .action(cmd_build)
 
 program
-  .command('migrate <path>')
+  .command('migrate <from> [to]')
   .description('migrate exist markdown file into project')
   .action(cmd_migrate)
 
