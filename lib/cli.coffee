@@ -41,6 +41,8 @@ import_settings = (to='.') ->
   local_settings.destination = path.join top, local_settings.destination
   local_settings.theme_path = path.join top, "themes"
   local_settings.plugin_path = path.join top, "plugins"
+  # asset_url default to base_url
+  local_settings.asset_url = local_settings.base_url
   return local_settings
 
 create_post = (src, to, callback) ->
@@ -169,6 +171,8 @@ cmd_publish = (to) ->
 
 cmd_build = (to='.', args) ->
   settings = import_settings to
+  if args.assetUrl
+    settings.asset_url = args.assetUrl
   console.log 'copying theme'.info
   fs.copy "#{settings.theme_path}", "#{settings.destination}/themes", ->
     console.log 'parse markdown'.info
@@ -244,6 +248,7 @@ program
 program
   .command('build [to]')
   .description('build html files')
+  .option('-u --asset-url [url]', 'use self defined asset url')
   .option('-s --server [port]', 'start local server')
   .option('-a --auto', 'watch for file change and auto update')
   .action(cmd_build)
