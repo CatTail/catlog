@@ -39,6 +39,8 @@ render.render = (site, callback) ->
 render.render_file = (src, dest, context) ->
   dir = path.dirname src
   type = path.basename src
+  # use index.html if permalink don't have filename
+  dest = path.join(dest, if path.extname dest then '' else 'index.html')
   for file in fs.readdirSync dir
     if file.indexOf(type) is 0
       format = path.extname(file).slice(1)
