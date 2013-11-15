@@ -24,7 +24,7 @@ html
       ul
         li: a(href="#{base_url}") Home
         each category in categories
-          li: a(href="#{base_url}#{category}") #{category}
+          li: a(href="#{base_url}#{category}/") #{category}
         li: a(href="#{base_url}feed.xml") Feed
         li: a(href="#{about_url}") About
     #content
