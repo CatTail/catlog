@@ -196,7 +196,7 @@ cmd_build = (to='.', args) ->
         server.run {path: settings.destination, port: port}
       # auto build
       if args.auto
-        watch settings.source, ->
+        watch settings.source, {followSymLinks: true}, ->
           build settings
 
 
@@ -221,7 +221,7 @@ cmd_preview = (to='.', args) ->
         server.run {path: settings.destination, port: port}
         # auto build
         if args.auto
-          watch settings.source, ->
+          watch settings.source, {followSymLinks: true}, ->
             build settings
 
 cmd_migrate = (from, to) ->
