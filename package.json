@@ -1,6 +1,6 @@
 {
   "name": "catlogjs",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Static site generator, translate human readable text format(such as markdown) into html, with a lot of other functions",
   "main": "index.coffee",
   "scripts": {},
