@@ -11,6 +11,7 @@ server = require '../lib/server'
 directory = require '../lib/directory'
 parser = require '../lib/parser'
 render = require '../lib/render.coffee'
+watch = require 'node-watch'
 
 colors.setTheme({
   silly: 'rainbow'
@@ -169,6 +170,12 @@ cmd_publish = (to) ->
   create_post '', to, ->
     process.stdin.destroy()
 
+
+build = (settings, callback) ->
+  parser.parse settings, (env) ->
+    render.render env
+
+
 cmd_build = (to='.', args) ->
   settings = import_settings to
   if args.assetUrl
@@ -187,6 +194,11 @@ cmd_build = (to='.', args) ->
         else
           port = args.server
         server.run {path: settings.destination, port: port}
+      # auto build
+      if args.auto
+        watch settings.source, ->
+          build settings
+
 
 cmd_preview = (to='.', args) ->
   temp.mkdir 'catlog', (err, dirPath) ->
@@ -207,6 +219,10 @@ cmd_preview = (to='.', args) ->
         else
           port = settings.port
         server.run {path: settings.destination, port: port}
+        # auto build
+        if args.auto
+          watch settings.source, ->
+            build settings
 
 cmd_migrate = (from, to) ->
   srcs = directory.list from, (src) ->

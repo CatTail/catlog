@@ -3,8 +3,7 @@
   "version": "0.1.5",
   "description": "Static site generator, translate human readable text format(such as markdown) into html, with a lot of other functions",
   "main": "index.coffee",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/CatTail/catlog.git"
@@ -44,6 +43,7 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-bump": "0.0.11"
+    "grunt-bump": "0.0.11",
+    "node-watch": "~0.3.4"
   }
 }
