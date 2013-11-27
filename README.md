@@ -1,5 +1,6 @@
 # Catlog
 [![Build Status](https://travis-ci.org/catlog/catlog.png?branch=master)](https://travis-ci.org/catlog/catlog)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/CatTail/abbr/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 ## Introduction
 Catlog is a static site generator. It allow users to use markdown syntax to write blog article and publish it with html format. Catlog has a inner test server to allow you see your blog after write it. It also support for self theme and plugin definition.
