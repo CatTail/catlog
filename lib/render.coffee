@@ -21,8 +21,11 @@ render.render = (site, callback) ->
     dest = path.join post.destination, post.permalink
     @render_file src, dest, post
     # assets
+    #dest = path.join(dest, if path.extname dest then '' else 'index.html')
+    # use current directory if permalink don't have filename
+    dest = if path.extname dest then path.dirname dest else dest
     assets = path.join path.dirname(post.src), 'assets'
-    fs.copy "#{assets}", "#{path.dirname dest}/assets"
+    fs.copy "#{assets}", "#{dest}/assets"
 
   src = path.join site.theme_path, site.theme, 'index'
   dest = path.join site.destination, 'index.html'
