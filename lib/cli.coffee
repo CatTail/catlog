@@ -11,7 +11,6 @@ server = require '../lib/server'
 directory = require '../lib/directory'
 parser = require '../lib/parser'
 render = require '../lib/render.coffee'
-watch = require 'node-watch'
 
 colors.setTheme({
   silly: 'rainbow'
