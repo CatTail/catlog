@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "marked": "~0.2.8",
-    "jade": "*",
+    "jade": "~0.35.0",
     "ejs": "~0.8.4",
     "node-static": "~0.6.9",
     "underscore": "1.4.4",
