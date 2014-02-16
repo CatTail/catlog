@@ -14,7 +14,7 @@ directory.mkdir_parent = (dir, mode) ->
   try
     fs.mkdirSync dir, mode
   catch error
-    if error and error.errno is 34
+    if error # and error.errno is 34
       directory.mkdir_parent path.dirname(dir), mode
       directory.mkdir_parent dir, mode
     else
