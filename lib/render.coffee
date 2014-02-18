@@ -15,10 +15,11 @@ render.render = (site, callback) ->
   for post in site.posts
     handler = require "./handler/#{post.type or 'default'}"
     handler.render post
-
+  # main page
   src = path.join site.theme_path, site.theme, 'index'
   dest = path.join site.destination, 'index.html'
   @render_file src, dest, site
+  # category page
   for category in site.categories
     src = path.join site.theme_path, site.theme, 'list'
     dest = path.join site.destination, category, 'index.html'
