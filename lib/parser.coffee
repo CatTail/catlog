@@ -40,11 +40,14 @@ parser.parse = (site, callback) ->
     new Date("#{b.date} #{b.time}") - new Date("#{a.date} #{a.time}")
   # parse content
   async.each site.posts, ((post, callback) =>
-    handler = require "./parser/#{post.type or 'default'}"
-    handler.parse fs.readFileSync(post.src, 'utf8'), (context) =>
-      for key, val of context
-        post[key] = val
+    handler = require "./handler/#{post.type or 'default'}"
+    handler.parse post, ->
       callback()
+    #console.log post
+    #handler.parse fs.readFileSync(post.src, 'utf8'), (context) =>
+      #for key, val of context
+        #post[key] = val
+      #callback()
   ), ->
     callback site
 
