@@ -13,19 +13,8 @@ render = {}
 render.render = (site, callback) ->
   site.plugins = @render_plugin site.plugin_path, site.plugins
   for post in site.posts
-    # markdown interpolation
-    if post.content
-      post.content = engine.ejs.render post.content, post
-    # render
-    src = path.join post.theme_path, post.theme, 'post'
-    dest = path.join post.destination, post.permalink
-    @render_file src, dest, post
-    # assets
-    #dest = path.join(dest, if path.extname dest then '' else 'index.html')
-    # use current directory if permalink don't have filename
-    dest = if path.extname dest then path.dirname dest else dest
-    assets = path.join path.dirname(post.src), 'assets'
-    fs.copy "#{assets}", "#{dest}/assets"
+    handler = require "./handler/#{post.type or 'default'}"
+    handler.render post
 
   src = path.join site.theme_path, site.theme, 'index'
   dest = path.join site.destination, 'index.html'
